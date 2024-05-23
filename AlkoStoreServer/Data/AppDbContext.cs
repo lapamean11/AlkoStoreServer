@@ -44,7 +44,7 @@ namespace AlkoStoreServer.Data
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(
-                    "Server=DESKTOP-18F735S\\SQLEXPRESS;Database=AlkoStore2;User Id=DESKTOP-18F735S\\SANSARA;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
+                    "myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
                     );
             }
         }
