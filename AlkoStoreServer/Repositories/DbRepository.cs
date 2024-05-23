@@ -8,7 +8,7 @@ namespace AlkoStoreServer.Repositories
 {
     public class DbRepository<T> : BaseRepository, IDbRepository<T> where T : class, new()
     {
-        private readonly DbSet<T> _dbSet;
+        private DbSet<T> _dbSet; //readonly
 
         public DbRepository(
             AppDbContext dbContext
@@ -17,12 +17,14 @@ namespace AlkoStoreServer.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetById(int id)
         {
-            return _dbSet.Find(id);
+            T result = await _dbSet.FindAsync(id);
+
+            return result;
         }
 
-        public T GetById(int id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T> GetById(int id, params Expression<Func<T, object>>[] includeProperties)
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
@@ -31,12 +33,12 @@ namespace AlkoStoreServer.Repositories
                 query = query.Include(includeProperty);
             }
 
-            T result = query.FirstOrDefault(e => _dbContext.Entry(e).Property<int>("Id").CurrentValue == id);
+            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID") == id);
 
             return result;
         }
 
-        public T GetById(int id, params Func<IQueryable<T>, IQueryable<T>>[] includeProperties)
+        public async Task<T> GetById(int id, params Func<IQueryable<T>, IQueryable<T>>[] includeProperties)
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
@@ -45,14 +47,17 @@ namespace AlkoStoreServer.Repositories
                 query = includeProperty(query);
             }
 
-            T result = query.FirstOrDefault(e => _dbContext.Entry(e).Property<int>("Id").CurrentValue == id);
+            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID") == id);
 
             return result;
         }
 
-        public IEnumerable<T> GetWithInclude() => GetWithInclude(new Expression<Func<T, object>>[0]);
+        public async Task<IEnumerable<T>> GetWithInclude()
+        {
+            return await GetWithInclude(new Expression<Func<T, object>>[0]);
+        }
 
-        public IEnumerable<T> GetWithInclude(params Expression<Func<T, object>>[] includeProperties)
+        public async Task<IEnumerable<T>> GetWithInclude(params Expression<Func<T, object>>[] includeProperties)
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
@@ -61,10 +66,12 @@ namespace AlkoStoreServer.Repositories
                 query = query.Include(includeProperty);
             }
 
-            return query.ToList();
+            var result = await query.ToListAsync();
+
+            return result;
         }
 
-        public IEnumerable<T> GetWithInclude(params Func<IQueryable<T>, IQueryable<T>>[] includeProperties)
+        public async Task<IEnumerable<T>> GetWithInclude(params Func<IQueryable<T>, IQueryable<T>>[] includeProperties)
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
@@ -73,13 +80,30 @@ namespace AlkoStoreServer.Repositories
                 query = includeProperty(query);
             }
 
-            return query.ToList();
+            var result = await query.ToListAsync();
+
+            return result;
         }
 
-        public void SaveEntity(T entity)
+        public async Task SaveEntity(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> CreateEntity(T entity)
+        { 
+            try
+            {
+                _dbContext.Add(entity);
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                return false;
+            }
         }
     }
 }

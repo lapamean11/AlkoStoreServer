@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminPanelLayout";
+}
+
+@* <p>Current Controller: @ViewBag.ActionController</p> *@
+
+<div class="admin-list-wrapper">
+    <div class="list-header flex">
+        @foreach (var item in @Model[0].GetType().GetProperties())
+        {
+            <div class="column-name" style="width: @((100 / @Model[0].GetType().GetProperties().Length).ToString() + "%")">
+                @item.Name
+            </div>
+        }
+    </div>
+    @{
+        var counter = 0;
+    }
+
+
+    @*<b>AHAHAHAHAHA @key</b>*@
+
+
+    @foreach (var data in @Model)
+    {
+       @*  var lol = data;
+        var lol2 = data.ID;
+        var lol3 = data.GetType().Name;
+        var lol4 = lol3; *@
+        @*<a href="/AboutPage">AZAZA</a>*@
+        var actionUrl = "/" + data.GetType().Name + "/edit/" + data.ID;
+        @*<a href="@actionUrl">AZAZA</a>*@
+        <a href="@actionUrl">
+            <div class="flex" style="background-color: @(counter % 2 == 0 ? "silver" : "transparent")">
+                @foreach (var item in data.GetType().GetProperties())
+                {
+                    <div class="cell" style="width: @((100/data.GetType().GetProperties().Length).ToString()+"%")">
+                        @item.GetValue(data)
+                    </div>
+                }
+            </div>
+        </a>
+        counter++;
+    }
+</div>

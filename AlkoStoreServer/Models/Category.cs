@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using AlkoStoreServer.Base;
 
 namespace AlkoStoreServer.Models
 {
-    public class Category
+    public class Category : Model
     {
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -11,11 +12,15 @@ namespace AlkoStoreServer.Models
 
         public string? Name { get; set; }
 
-        public int? CategoryId { get; set; }
+        public int? ParentCategoryId { get; set; }
 
         public int? CategoryLevel { get; set; }
 
-        /*public List<ProductCategory> ProductCategory { get; set; }*/
+        // [NotMapped]
+        public List<Category> ChildCategories { get; set; }
+
+        public Category ParentCategory { get; set; }
+
         public List<Product>? Products { get; set; }
 
         public List<CategoryAttributeCategory> CategoryAttributes { get; set; }

@@ -20,3 +20,129 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-space-between {
+    justify-content: space-between;
+}
+
+.items-center {
+    align-items: center;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+    body .root {
+        padding: 20px 200px 20px 200px;
+    }
+
+    body .header {
+        background: #a1ced4;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 150px 10px 150px;
+    }
+
+        body .header .logo {
+            height: 75px;
+        }
+
+        body .header .search {
+            width: 100%;
+            position: relative;
+            display: flex;
+        }
+
+        body .header .searchTerm {
+            width: 100%;
+            border: 3px solid #00B4CC;
+            border-right: none;
+            padding: 5px;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            color: #9DBFAF;
+        }
+
+            body .header .searchTerm:focus {
+                color: #00B4CC;
+            }
+
+        body .header .searchButton {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #00B4CC;
+            background: #00B4CC;
+            text-align: center;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        body .header .wrap {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+    body .categories {
+        display: flex;
+        gap: 30px;
+    }
+
+        body .categories .category a {
+            text-decoration: none;
+        }
+
+    body .footer {
+        background: #a1ced4;
+        height: 200px;
+        margin-top: auto;
+    }
+
+.admin-wrapper .root {
+    padding: 10px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+    .admin-wrapper .root .admin-header {
+        background-color: antiquewhite;
+        padding: 15px 20px;
+    }
+
+.admin-wrapper .sidebar {
+    width: 70px;
+    height: 100vh;
+    background-color: cadetblue;
+}
+
+.admin-wrapper .sidebar-image svg {
+    height: 50px;
+    width: 50px;
+}
+
+.admin-header {
+    background-color: red;
+}

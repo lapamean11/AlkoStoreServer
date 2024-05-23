@@ -1,8 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Login Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+   
+
+    <form action="/user/login" method="POST">
+        @Html.AntiForgeryToken()
+        <div>
+            <label for="Username">Username</label>
+            <input name="Username" />
+        </div>
+        <div>
+            <label for="Password">Password</label>
+            <input name="Password" type="password" />
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    <form action="/user/register" method="POST">
+        @Html.AntiForgeryToken()
+        <button type="submit">Register</button>
+    </form>
+    
 </div>

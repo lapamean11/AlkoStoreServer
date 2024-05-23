@@ -4,7 +4,7 @@ namespace AlkoStoreServer.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        public IEnumerable<ProductProjection> GetProductsWithStores();
+        public Task<IEnumerable<ProductProjection>> GetProductsWithStores();
 
     }
 }

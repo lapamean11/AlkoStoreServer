@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using AlkoStoreServer.Base;
+using AlkoStoreServer.CustomAttributes;
 
 namespace AlkoStoreServer.Models
 {
-    public class Product
+    public class Product : Model
     {
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -11,8 +13,10 @@ namespace AlkoStoreServer.Models
 
         public string Name { get; set; }
 
+        [Reference(typeof(Category))]
         public List<Category> Categories { get; set; }
 
+        [Reference(typeof(Store))]
         public List<ProductStore> ProductStore { get; set; }
 
         public List<Review> Reviews { get; set; }

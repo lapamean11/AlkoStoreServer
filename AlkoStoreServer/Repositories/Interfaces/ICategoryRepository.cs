@@ -4,6 +4,6 @@ namespace AlkoStoreServer.Repositories.Interfaces
 {
     public interface ICategoryRepository
     {
-        public IEnumerable<CategoryProjection> GetCategories();
+        public Task<IEnumerable<CategoryProjection>> GetCategories();
     }
 }

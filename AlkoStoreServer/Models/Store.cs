@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using AlkoStoreServer.Base;
 
 namespace AlkoStoreServer.Models
 {
-    public class Store
+    public class Store : Model
     {
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]

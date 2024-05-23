@@ -1,8 +1,14 @@
-﻿namespace AlkoStoreServer.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using AlkoStoreServer.Base;
+
+namespace AlkoStoreServer.Models
 {
-    public class User
+    public class User : Model
     {
-        public int ID { get; set; }
+        [Key]
+        [Required]
+        public string UserId { get; set; }
 
         public string Name { get; set; }
 

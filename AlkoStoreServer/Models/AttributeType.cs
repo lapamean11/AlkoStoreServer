@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using AlkoStoreServer.Base;
 
 namespace AlkoStoreServer.Models
 {
-    public class AttributeType
+    public class AttributeType : Model
     {
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]

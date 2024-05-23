@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_BaseLayout";
+}
+<div class="admin-layout-wrapper admin-wrapper flex">
+    <div class="sidebar flex-col items-center">
+        <div class="sidebar-item">
+            <a href="/product/list">
+                <div class="sidebar-image">
+                    
+                </div>
+                <p>Products</p>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/users/list">
+                <div class="sidebar-image">
+                </div>
+                <p>Users</p>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/category/list">
+                <div class="sidebar-image">
+                    
+                </div>
+                <p>Categories</p>
+            </a>
+        </div>
+    </div>
+    <div class="root">
+        <div class="admin-header flex content-space-between">
+            <h3>Admin Header</h3>
+            @using (Html.BeginForm("Logout", "User", FormMethod.Post))
+            {
+                <button type="submit">Logout</button>
+            }
+        </div>
+        @RenderBody()
+    </div>
+</div>

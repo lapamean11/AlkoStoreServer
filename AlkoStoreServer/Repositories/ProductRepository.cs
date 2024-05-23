@@ -15,9 +15,9 @@ namespace AlkoStoreServer.Repositories
 
         }
 
-        public IEnumerable<ProductProjection> GetProductsWithStores()
+        public async Task<IEnumerable<ProductProjection>> GetProductsWithStores()
         {
-            IEnumerable<ProductProjection> products = _dbContext.Product
+            IEnumerable<ProductProjection> products = await _dbContext.Product
                 .Include(p => p.ProductStore)
                 .ThenInclude(ps => ps.Store)
                 .Select(p => new ProductProjection {
@@ -33,7 +33,7 @@ namespace AlkoStoreServer.Repositories
                         Products = null
                     }).ToList()
 
-                }).ToList();
+                }).ToListAsync();
 
             return products;
         }

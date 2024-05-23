@@ -35,12 +35,16 @@ namespace AlkoStoreServer.Data
 
         public DbSet<ProductAttributeProduct> ProductAttributeProduct { get; set; }
 
+        public DbSet<Role> Role { get; set; }
+
+        public DbSet<AdminUser> AdminUser { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(
-                    "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
+                    "Server=DESKTOP-18F735S\\SQLEXPRESS;Database=AlkoStore2;User Id=DESKTOP-18F735S\\SANSARA;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
                     );
             }
         }
@@ -50,6 +54,15 @@ namespace AlkoStoreServer.Data
             modelBuilder.Entity<Product>(entity => {
 
                 entity.ToTable("Product");
+            });
+
+            modelBuilder.Entity<AdminUser>(entity => {
+
+                entity.HasOne(au => au.Role)
+                    .WithMany(r => r.AdminUsers)
+                    .HasForeignKey(au => au.RoleId);
+
+                entity.ToTable("AdminUser");
             });
 
             modelBuilder.Entity<ProductAttribute>(entity => {
@@ -81,6 +94,10 @@ namespace AlkoStoreServer.Data
                         j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
                         j => j.HasOne<Category>().WithMany().HasForeignKey("CategoryId")
                     );
+
+                /*entity.HasMany(c => c.ChildCategories)
+                      .WithOne(c => c.ParentCategory)
+                      .HasForeignKey(c => c.ParentCategoryId);*/
 
                 entity.ToTable("Category");
             });

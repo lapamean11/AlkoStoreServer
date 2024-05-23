@@ -6,7 +6,7 @@
 
         public string? Name { get; set; }
 
-        public int? CategoryId { get; set; }
+        public int? ParentCategoryId { get; set; }
 
         public int? CategoryLevel { get; set; }
 

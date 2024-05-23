@@ -17,15 +17,14 @@ namespace AlkoStoreServer.Repositories
 
         }
 
-        public IEnumerable<CategoryProjection> GetCategories()
+        public async Task<IEnumerable<CategoryProjection>> GetCategories()
         {
-            
-            IEnumerable<CategoryProjection> categories = _dbContext.Category
+            IEnumerable<CategoryProjection> categories = await _dbContext.Category
                     .Select(c => new CategoryProjection
                     {
                         ID = c.ID,
                         Name = c.Name,
-                        CategoryId = c.CategoryId,
+                        ParentCategoryId = c.ParentCategoryId,
                         CategoryLevel = c.CategoryLevel,
                         CategoryAttributes = c.CategoryAttributes
                             .Select(cac => new AttributesProjection
@@ -36,10 +35,9 @@ namespace AlkoStoreServer.Repositories
                                 Name = cac.Attribute.Name,
                                 AttributeType = cac.Attribute.AttributeType.Type
                             }).ToList()
-                        }).ToList();
+                    }).ToListAsync();
 
             return categories;
-
         }
     }
 }

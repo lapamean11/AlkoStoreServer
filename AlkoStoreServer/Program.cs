@@ -1,22 +1,36 @@
+using AlkoStoreServer.Auth;
 using AlkoStoreServer.Data;
 using AlkoStoreServer.Middleware;
 using AlkoStoreServer.Repositories;
 using AlkoStoreServer.Repositories.Interfaces;
+using AlkoStoreServer.Services.Interfaces;
+using AlkoStoreServer.Services;
 using Firebase.Auth;
 using Firebase.Auth.Providers;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
+using AlkoStoreServer.ViewHelpers;
+using AlkoStoreServer.ViewHelpers.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options => 
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
+
+builder.Services.AddHttpContextAccessor();
 
 FirebaseApp.Create(new AppOptions()
 {
@@ -40,7 +54,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.Name = "LoginCookie";
+            options.LoginPath = "/Account/Login"; // Customize as needed
+            options.LogoutPath = "/Account/Logout"; // Customize as needed
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminAccess", policy =>
+         policy.Requirements.Add(new AdminRequirement()));
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
@@ -61,6 +89,14 @@ builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
         new GoogleProvider()
     }
 }));
+
+builder.Services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
+builder.Services.AddSingleton<IInstanceResolver, InstanceResolver>();
+
+builder.Services.AddScoped<IAttributeService, AttributeService>();
+builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
+
+builder.Services.AddScoped<IHtmlRenderer, HtmlRenderer>();
 
 var app = builder.Build();
 
