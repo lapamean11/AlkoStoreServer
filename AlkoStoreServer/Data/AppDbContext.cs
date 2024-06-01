@@ -51,6 +51,11 @@ namespace AlkoStoreServer.Data
                 entity.ToTable("Product");
             });
 
+            modelBuilder.Entity<User>(entity => {
+
+                entity.ToTable("Users");
+            });
+
             modelBuilder.Entity<AdminUser>(entity => {
 
                 entity.HasOne(au => au.Role)
@@ -106,6 +111,8 @@ namespace AlkoStoreServer.Data
                     .WithMany(e => e.ChildCategories)
                     .HasForeignKey(e => e.ParentCategoryId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // entity.Ignore(e => e.ParentCategory);
 
                 entity.ToTable("Category");
             });

@@ -10,8 +10,10 @@ namespace AlkoStoreServer.Models
         [Key]
         public int ID { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public int ProductId { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public int StoreId { get; set; }
 
         public decimal Price { get; set; }

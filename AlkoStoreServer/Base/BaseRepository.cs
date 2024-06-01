@@ -6,7 +6,7 @@ namespace AlkoStoreServer.Base
 {
     public class BaseRepository
     {
-        public readonly AppDbContext _dbContext; // protected
+        protected readonly AppDbContext _dbContext; // protected
 
         public BaseRepository(AppDbContext context)
         {
@@ -18,7 +18,8 @@ namespace AlkoStoreServer.Base
             var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings 
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
             });
 
             return json;

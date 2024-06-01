@@ -13,6 +13,7 @@ namespace AlkoStoreServer.Models
 
         public string Identifier { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public int TypeId { get; set; }
 
         public string Name { get; set; }

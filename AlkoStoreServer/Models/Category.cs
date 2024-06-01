@@ -13,6 +13,7 @@ namespace AlkoStoreServer.Models
 
         public string? Name { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public int? ParentCategoryId { get; set; }
 
         public int? CategoryLevel { get; set; }
@@ -20,6 +21,7 @@ namespace AlkoStoreServer.Models
         [NoRender]
         public List<Category> ChildCategories { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         [Reference(typeof(Category))]
         public Category? ParentCategory { get; set; }
 

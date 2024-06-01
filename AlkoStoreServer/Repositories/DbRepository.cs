@@ -38,7 +38,7 @@ namespace AlkoStoreServer.Repositories
                 query = query.Include(includeProperty);
             }
 
-            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID") == id);
+            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID" ?? "UserId") == id);
 
             return result;
         }
@@ -52,7 +52,23 @@ namespace AlkoStoreServer.Repositories
                 query = includeProperty(query);
             }
 
-            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID") == id);
+            T result = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "ID" ?? "UserId") == id);
+
+            return result;
+        }
+
+        public async Task<TResult> GetById<TResult>(int id, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includeProperties)
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            var result = await query.Where(e => EF.Property<int>(e, "ID" ?? "UserId") == id)
+                                    .Select(selector)
+                                    .FirstOrDefaultAsync();
 
             return result;
         }

@@ -12,6 +12,6 @@
 
         /*public List<ProductCategory> ProductCategory { get; set; }*/
 
-        public List<AttributesProjection> CategoryAttributes { get; set; }
+        public List<AttributesProjection>? CategoryAttributes { get; set; }
     }
 }

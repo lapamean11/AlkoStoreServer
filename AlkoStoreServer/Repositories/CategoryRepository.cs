@@ -33,7 +33,7 @@ namespace AlkoStoreServer.Repositories
                                 Value = cac.Value,
                                 Identifier = cac.Attribute.Identifier,
                                 Name = cac.Attribute.Name,
-                                AttributeType = cac.Attribute.AttributeType.Type
+                                AttrType = cac.Attribute.AttributeType.Type
                             }).ToList()
                     }).ToListAsync();
 

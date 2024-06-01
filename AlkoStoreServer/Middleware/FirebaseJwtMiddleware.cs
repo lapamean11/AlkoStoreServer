@@ -41,13 +41,14 @@ namespace AlkoStoreServer.Middleware
                 }
                 else
                 {
-                    context.Response.StatusCode = 401;
+                    await _next(context);
+                    //context.Response.StatusCode = 401;
                 }
             }
             catch (FirebaseAuthException ex)
             {
-                // await _next(context);
-                context.Response.StatusCode = 401;
+                await _next(context);
+                //context.Response.StatusCode = 401;
             }
         }
     }

@@ -6,5 +6,7 @@ namespace AlkoStoreServer.Repositories.Interfaces
     {
         public Task<IEnumerable<ProductProjection>> GetProductsWithStores();
 
+        public Task<ProductProjection> GetProductById(int id);
+
     }
 }

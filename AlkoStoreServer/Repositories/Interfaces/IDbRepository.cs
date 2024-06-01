@@ -17,6 +17,8 @@ namespace AlkoStoreServer.Repositories.Interfaces
 
         public Task<T> GetById(int id, params Func<IQueryable<T>, IQueryable<T>>[] includeProperties);
 
+        public Task<TResult> GetById<TResult>(int id, Expression<Func<T, TResult>> selector, params Expression<Func<T, object>>[] includeProperties);
+
         public Task SaveEntity(T entity);
 
         public Task<int> CreateEntity(T entity);
