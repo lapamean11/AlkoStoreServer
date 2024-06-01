@@ -97,7 +97,7 @@ namespace AlkoStoreServer.Controllers
 
                 user.SetPassword("admin123");
 
-                bool result = await _adminUserRepository.CreateEntity(user);
+                int newUserId = await _adminUserRepository.CreateEntity(user);
             }
 
             return RedirectToAction("Index", "Home");

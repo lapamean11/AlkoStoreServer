@@ -3,8 +3,19 @@
 *@
 @{
     Layout = "_AdminPanelLayout";
+    string modelName = ViewBag.Model.GetType().Name;
+    int id = ViewBag.Model.ID;
 }
 
 <h2>Edit</h2>
+
+<div class="action-buttons flex">
+
+    <form action="/@modelName/delete/@id" method="POST">
+        <button type="submit">
+            DELETE
+        </button>
+    </form>
+</div>
 
 @Model

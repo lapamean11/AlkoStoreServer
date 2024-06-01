@@ -11,6 +11,8 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         private string _name;
 
+        private string _prefixName = null;
+
         public CheckBoxInput(
             string name
         ) {
@@ -22,7 +24,8 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             string namePrefix
         )
         {
-            _name = namePrefix + "." + name;
+            _name = name;
+            _prefixName = namePrefix;
         }
 
         public void SetValue(dynamic value)
@@ -32,35 +35,31 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         private string GetLabel()
         {
+            if (_prefixName != null)
+            {
+                return "<label for=" + _name.Replace(" ", "") + ">" + _prefixName + "</label>";
+            }
+
             return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
         }
 
         public string Render()
         {
-            _result += GetLabel();
-
             HtmlDocument doc = new HtmlDocument();
 
             HtmlNode input = doc.CreateElement("input");
-            HtmlNode hiddenInput = doc.CreateElement("input");
-
-            hiddenInput.SetAttributeValue("type", "hidden");
-            hiddenInput.SetAttributeValue("name", _name.Replace(" ", ""));
-            hiddenInput.SetAttributeValue("value", Int32.Parse(_value) == 1 ? "1" : "0");
-            hiddenInput.SetAttributeValue("id", _name.Replace(" ", ""));
-
             input.SetAttributeValue("type", "checkbox");
             input.SetAttributeValue("name", _name.Replace(" ", ""));
-            input.SetAttributeValue("value", Int32.Parse(_value) == 1 ? "1" : "0");
-            input.SetAttributeValue("id", _name.Replace(" ", ""));
+            input.SetAttributeValue("value", "1");
+            input.AddClass("checkbox");
 
-            if (Int32.Parse(_value) == 1)
+            if (_value != null && Int32.Parse(_value) == 1)
                 input.SetAttributeValue("checked", "checked");
 
             HtmlNode wrapper = doc.CreateElement("div");
             wrapper.AddClass("input-wrapper");
 
-            wrapper.InnerHtml += hiddenInput.OuterHtml;
+            wrapper.InnerHtml += GetLabel();
             wrapper.InnerHtml += input.OuterHtml;
 
             _result += wrapper.OuterHtml;

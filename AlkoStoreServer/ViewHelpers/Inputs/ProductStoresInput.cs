@@ -27,34 +27,138 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         public string Render()
         {
-            _result += GetLabel();
-
             HtmlDocument doc = new HtmlDocument();
 
             List<string> selected = new List<string>();
-            foreach (var item in _value)
+
+            if (_value != null)
             {
-                var id = item.GetType().GetProperty("StoreId").GetValue(item, null);
-                selected.Add(id.ToString());
+                foreach (var item in _value)
+                {
+                    var id = item.GetType().GetProperty("StoreId").GetValue(item, null);
+                    selected.Add(id.ToString());
+                }
             }
 
+            int counter = 0;
             foreach (var item in _selectData)
             {
                 var id = item.GetType().GetProperty("ID").GetValue(item, null).ToString();
                 var storeName = item.GetType().GetProperty("Name").GetValue(item, null).ToString();
 
                 HtmlNode inputWrapper = doc.CreateElement("div");
-                inputWrapper.AddClass("input-wrapper");
+                inputWrapper.AddClass("store-inputs-wrapper");
                 inputWrapper.AddClass("flex-col");
 
                 HtmlNode checkBox = doc.CreateElement("input");
-                HtmlNode hiddenCheckBox = doc.CreateElement("input");
+                checkBox.SetAttributeValue("type", "checkbox");
+                checkBox.SetAttributeValue("name", _name + "[" + counter + "].StoreId");
+                checkBox.SetAttributeValue("value", id);
+
+                HtmlNode StoreName = doc.CreateElement("h5");
+                HtmlTextNode Name = doc.CreateTextNode(storeName);
+                StoreName.AppendChild(Name);
+
+                HtmlNode titleWrapper = doc.CreateElement("div");
+                titleWrapper.AddClass("store-title-wrapper flex items-center");
+                titleWrapper.AppendChild(StoreName);
+                titleWrapper.AppendChild(checkBox);
+
+                //_result += StoreName.OuterHtml;
+
+                TextInput priceInput = new TextInput(
+                    _name + "[" + counter + "].Price",
+                    "Price"
+                );
+
+                TextInput barcodeInput = new TextInput(
+                    _name + "[" + counter + "].Barcode",
+                    "Barcode"
+                );
+
+                TextInput qtyInput = new TextInput(
+                    _name + "[" + counter + "].Qty",
+                    "Qty"
+                );
+
+                if (selected.Contains(id))
+                {
+                    checkBox.SetAttributeValue("checked", "checked");
+
+                    foreach (var data in _value)
+                    {
+                        if (data.StoreId == Int32.Parse(id))
+                        {
+                            priceInput.SetValue(Convert.ToString(data.Price));
+                            barcodeInput.SetValue(Convert.ToString(data.Barcode));
+                            qtyInput.SetValue(Convert.ToString(Convert.ToString(data.Qty)));
+                        }
+                    }
+                }
+
+                //inputWrapper.InnerHtml += StoreName.OuterHtml;
+                //inputWrapper.InnerHtml += checkBox.OuterHtml;
+                inputWrapper.InnerHtml += titleWrapper.OuterHtml;
+                inputWrapper.InnerHtml += priceInput.Render();
+                inputWrapper.InnerHtml += barcodeInput.Render();
+                inputWrapper.InnerHtml += qtyInput.Render();
+
+                _result += inputWrapper.OuterHtml;
+                counter++;
+            }
+
+            HtmlNode wrapper = doc.CreateElement("div");
+            wrapper.AddClass("input-section-wrapper flex-col");
+
+            HtmlNode storesWrapper = doc.CreateElement("div");
+            storesWrapper.AddClass("stores-wrapper flex-wrap gap1");
+
+            storesWrapper.InnerHtml += _result;
+
+            wrapper.InnerHtml += GetLabel();
+            wrapper.InnerHtml += storesWrapper.OuterHtml;
+
+            //_result = (wrapper.InnerHtml += _result);
+
+            return wrapper.OuterHtml;
+        }
+
+        public string Render2()
+        {
+            HtmlDocument doc = new HtmlDocument();
+
+            List<string> selected = new List<string>();
+
+            if (_value != null) 
+            {
+                foreach (var item in _value)
+                {
+                    var id = item.GetType().GetProperty("StoreId").GetValue(item, null);
+                    selected.Add(id.ToString());
+                }
+            }
+
+            int counter = 0;
+            foreach (var item in _selectData)
+            {
+                var id = item.GetType().GetProperty("ID").GetValue(item, null).ToString();
+                var storeName = item.GetType().GetProperty("Name").GetValue(item, null).ToString();
+
+                HtmlNode inputWrapper = doc.CreateElement("div");
+                inputWrapper.AddClass("store-inputs-wrapper");
+                inputWrapper.AddClass("flex-col");
+
+                /*HtmlNode hiddenCheckBox = doc.CreateElement("input");
 
                 hiddenCheckBox.SetAttributeValue("type", "hidden");
-                hiddenCheckBox.SetAttributeValue("name", "StoreId");
+                hiddenCheckBox.SetAttributeValue("name", _name + "[" + counter + "].StoreId");
+                hiddenCheckBox.SetAttributeValue("value", "0");*/
+
+                HtmlNode checkBox = doc.CreateElement("input");
 
                 checkBox.SetAttributeValue("type", "checkbox");
-                checkBox.SetAttributeValue("name", "StoreId");
+                checkBox.SetAttributeValue("name", _name + "[" + counter + "].StoreId");
+                checkBox.SetAttributeValue("value", id);
 
                 HtmlNode StoreName = doc.CreateElement("p");
                 HtmlTextNode Name = doc.CreateTextNode(storeName);
@@ -64,16 +168,20 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
                 HtmlNode PriceInput = doc.CreateElement("input");
                 PriceInput.SetAttributeValue("type", "text");
-                PriceInput.SetAttributeValue("name", "ProductStore.Price");
+                PriceInput.SetAttributeValue("name", _name + "[" + counter + "].Price");
 
                 HtmlNode BarcodeInput = doc.CreateElement("input");
                 BarcodeInput.SetAttributeValue("type", "text");
-                BarcodeInput.SetAttributeValue("name", "ProductStore.Barcode");
+                BarcodeInput.SetAttributeValue("name", _name + "[" + counter + "].Barcode");
+
+                HtmlNode QtyInput = doc.CreateElement("input");
+                QtyInput.SetAttributeValue("type", "text");
+                QtyInput.SetAttributeValue("name", _name + "[" + counter + "].Qty");
 
                 if (selected.Contains(id))
                 {
-                    hiddenCheckBox.SetAttributeValue("value", "1");
-                    checkBox.SetAttributeValue("value", "1");
+                    // hiddenCheckBox.SetAttributeValue("value", id); // 1
+                    // checkBox.SetAttributeValue("value", id); // 1
                     checkBox.SetAttributeValue("checked", "checked");
 
                     foreach (var data in _value)
@@ -82,21 +190,26 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
                         {
                             PriceInput.SetAttributeValue("value", Convert.ToString(data.Price));
                             BarcodeInput.SetAttributeValue("value", data.Barcode);
+                            QtyInput.SetAttributeValue("value", Convert.ToString(data.Qty));
                         }
                     }
                 }
 
-                inputWrapper.InnerHtml += hiddenCheckBox.OuterHtml;
+                //inputWrapper.InnerHtml += GetLabel();
+                //inputWrapper.InnerHtml += hiddenCheckBox.OuterHtml;
                 inputWrapper.InnerHtml += checkBox.OuterHtml;
 
                 inputWrapper.InnerHtml += PriceInput.OuterHtml;
                 inputWrapper.InnerHtml += BarcodeInput.OuterHtml;
+                inputWrapper.InnerHtml += QtyInput.OuterHtml;
 
                 _result += inputWrapper.OuterHtml;
+                counter++;
             }
 
             HtmlNode wrapper = doc.CreateElement("div");
             wrapper.AddClass("input-section-wrapper");
+            wrapper.InnerHtml += GetLabel();
             _result = (wrapper.InnerHtml += _result);
 
             return _result;

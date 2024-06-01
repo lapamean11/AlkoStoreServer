@@ -19,8 +19,6 @@ namespace AlkoStoreServer.Auth
             AdminRequirement requirement
         )
         {
-            var lol = context.User.FindFirst("Id")?.Value;
-
             if (context.User.Identity.IsAuthenticated)
             {
                 int UserId = Int32.Parse(context.User.FindFirst("Id")?.Value);

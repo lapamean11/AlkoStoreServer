@@ -1,4 +1,5 @@
 ﻿using AlkoStoreServer.Base;
+using AlkoStoreServer.CustomAttributes;
 using AlkoStoreServer.Models;
 using AlkoStoreServer.Services.Interfaces;
 using AlkoStoreServer.ViewHelpers.Inputs;
@@ -7,6 +8,7 @@ using AlkoStoreServer.ViewHelpers.Interfaces;
 using AlkoStoreServer.ViewHelpers.Renderer;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Text;
 
@@ -19,11 +21,15 @@ namespace AlkoStoreServer.ViewHelpers
         public IDictionary<Type, Type> _attributeMap = new Dictionary<Type, Type>
         {
             { typeof(string), typeof(TextInput) },
+            { typeof(int?), typeof(TextInput) },
             { typeof(int), typeof(TextInput) },
             { typeof(List<ProductAttributeProduct>), typeof(AttributesInput) },
             { typeof(List<CategoryAttributeCategory>), typeof(AttributesInput) },
             { typeof(List<ProductStore>), typeof(ProductStoresInput) },
-            { typeof(List<Category>), typeof(MultiSelectInput) },
+            //{ typeof(List<Category>), typeof(MultiSelectInput) },
+            { typeof(List<ProductCategory>), typeof(MultiSelectInput) },
+            { typeof(AttributeType), typeof(SelectInput) },
+            { typeof(Category), typeof(SelectInput) },
         };
 
         public HtmlRenderer(IAttributeService attributeService)
@@ -43,6 +49,7 @@ namespace AlkoStoreServer.ViewHelpers
 
             form.SetAttributeValue("action", actionUrl);
             form.SetAttributeValue("method", "POST");
+            form.AddClass("entity-edit-form");
 
 
 
@@ -80,6 +87,59 @@ namespace AlkoStoreServer.ViewHelpers
             return new HtmlString(form.OuterHtml);
         }
 
+        public IHtmlContent RenderCreateForm(Model model)
+        {
+            StringBuilder html = new StringBuilder();
+            HtmlDocument doc = new HtmlDocument();
+
+            HtmlNode form = doc.CreateElement("form");
+            string actionUrl = "/" + model.GetType().Name +
+                                "/create/save/";
+
+            form.SetAttributeValue("action", actionUrl);
+            form.SetAttributeValue("method", "POST");
+            form.AddClass("entity-create-form");
+
+            PropertyInfo[] properties = model.GetType().GetProperties();
+
+            foreach (var data in properties)
+            {
+                if (!Attribute.IsDefined(data, typeof(NoRenderAttribute)))
+                {
+                    var value = data.GetValue(model);
+
+                    IInput input = DefineInput(data);
+
+                    if (input is ISelectInput selectInput)
+                    {
+                        var key = data.Name;
+                        var relatedData = _attributeService.GetFormRelatedData(model);
+
+                        if (relatedData.TryGetValue(key, out List<Model> values))
+                        {
+                            var lol = values;
+                            selectInput.SetSelectData(values);
+                        }
+                    }
+
+                    if (input != null) input.SetValue(value);
+
+                    InputRenderer renderer = new InputRenderer(input);
+
+                    html.Append(renderer.Render());
+                }
+            }
+
+            HtmlNode button = doc.CreateElement("button");
+            button.SetAttributeValue("type", "submit");
+            button.InnerHtml = "Create";
+
+            form.InnerHtml = html.ToString();
+            form.InnerHtml += button.OuterHtml;
+
+            return new HtmlString(form.OuterHtml);
+        }
+
 
         public IInput DefineInput(PropertyInfo data)
         {
@@ -87,6 +147,8 @@ namespace AlkoStoreServer.ViewHelpers
             {
                 if (item.Key == data.PropertyType)
                 {
+                    var lol = item;
+                    var lola = data;
                     return (IInput)Activator.CreateInstance(
                         item.Value,
                         data.Name

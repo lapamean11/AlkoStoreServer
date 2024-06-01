@@ -1,4 +1,5 @@
 ﻿using AlkoStoreServer.ViewHelpers.Inputs.Interfaces;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AlkoStoreServer.ViewHelpers.Inputs
@@ -33,22 +34,42 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         public string Render()
         {
-            _result += GetLabel();
+            //_result += GetLabel();
 
+            HtmlDocument doc = new HtmlDocument();
+
+            int counter = 0;
             foreach (var item in _value)
             {
+                var name = _name + "[" + counter + "]" + ".AttributeId"; //item.Attribute.ID
+                /*var name2 = _name + "[" + counter + "]" + ".CategoryId";*/
+
+                /*_result += "<input type=" + '"' + "hidden" + '"' + " name=" + '"' + name2 + '"' + " value=" + '"' + "0" + '"' + "/>";*/
+                _result += "<input type=" + '"' + "hidden" + '"' + 
+                                  " name=" + '"' + name + '"' + 
+                                  " value=" + '"' + item.Attribute.ID + '"' + "/>";
                 var input = (IInput)Activator.CreateInstance(
                     _attributeMap[item.Attribute.AttributeType.Type],
-                    item.Attribute.Name,
-                    _name
+                    _name + "[" + counter + "]" + ".Value",
+                    item.Attribute.Name
+
+                //item.Attribute.Name,
+                //_name
                 );
 
                 input.SetValue( item.Value );
 
                 _result += input.Render();
+                counter++;
             }
 
-            return _result;
+            HtmlNode wrapper = doc.CreateElement("div");
+            wrapper.AddClass("attributes-input-wrapper");
+
+            wrapper.InnerHtml += GetLabel();
+            wrapper.InnerHtml += _result;
+
+            return wrapper.OuterHtml;
         }
 
         public void SetValue(dynamic value)

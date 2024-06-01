@@ -1,4 +1,5 @@
 ﻿using AlkoStoreServer.Base;
+using AlkoStoreServer.Data;
 using AlkoStoreServer.Models;
 using AlkoStoreServer.Repositories;
 using AlkoStoreServer.Repositories.Interfaces;
@@ -16,19 +17,27 @@ namespace AlkoStoreServer.Controllers
     {
         private readonly IDbRepository<Category> _categoryRepository;
 
+        private readonly IDbRepository<CategoryAttribute> _categoryAttributeRepository;
+
+        private readonly IDbRepository<CategoryAttributeCategory> _categoryAttributeCategoryRepository;
+
         private readonly IHtmlRenderer _htmlRenderer;
 
         public CategoryController(
             IDbRepository<Category> categoryRepository,
+            IDbRepository<CategoryAttribute> categoryAttributeRepository,
+            IDbRepository<CategoryAttributeCategory> categoryAttributeCategoryRepository,
             IHtmlRenderer htmlRenderer
         ) {
             _categoryRepository = categoryRepository;
+            _categoryAttributeRepository = categoryAttributeRepository;
+            _categoryAttributeCategoryRepository = categoryAttributeCategoryRepository;
             _htmlRenderer = htmlRenderer;
         }
 
         [HttpGet("list")]
         [Authorize]
-        public async Task<IActionResult> ProductList()
+        public async Task<IActionResult> CategoryList()
         {
             List<Category> categories = (List<Category>) await _categoryRepository.GetWithInclude();
 
@@ -37,17 +46,111 @@ namespace AlkoStoreServer.Controllers
 
         [HttpGet("edit/{id}")]
         [Authorize]
-        public async Task<IActionResult> ProductEdit(string id)
+        public async Task<IActionResult> CategoryEdit(string id)
         {
             Category category = await _categoryRepository.GetById(int.Parse(id),
                 c => c.Include(e => e.CategoryAttributes)
                         .ThenInclude(e => e.Attribute)
                           .ThenInclude(e => e.AttributeType)
+                      .Include(e => e.ParentCategory)
            );
 
             IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(category);
+            ViewBag.Model = category;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
+        }
+
+        [HttpPost("delete/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteProduct(string id)
+        {
+            try
+            {
+                await _categoryRepository.DeleteAsync(Int32.Parse(id));
+
+                return RedirectToAction("CategoryList");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("create")]
+        [Authorize]
+        public async Task<IActionResult> CreateNewCategory()
+        {
+            Category category = new Category();
+
+            List<CategoryAttribute> attributes = 
+                (List<CategoryAttribute>) await _categoryAttributeRepository.GetWithInclude(
+                        a => a.Include(e => e.AttributeType)
+                    );
+
+            foreach (var attribute in attributes) 
+            {
+                var categoryAttr = new CategoryAttributeCategory
+                {
+                    Attribute = attribute,
+                };
+                category.CategoryAttributes.Add(
+                        categoryAttr
+                    );
+            }
+
+            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(category);
+
+            return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
+        }
+
+        [HttpPost("create/save")]
+        [Authorize]
+        public async Task<IActionResult> SaveNewCategory(Category category)
+        {
+            using (var transaction = await (
+                await _categoryRepository.GetContext()
+            ).Database.BeginTransactionAsync())
+            {
+                try 
+                {
+                    category.ParentCategoryId = category.ParentCategory.ID;
+
+                    Category parentCategory = await _categoryRepository.GetById((int)category.ParentCategoryId);
+                    var categoryAttributes = category.CategoryAttributes;
+                    category.CategoryLevel = parentCategory.CategoryLevel + 1;
+                    category.CategoryAttributes = null;
+                    category.ParentCategory = null;
+
+                    int newCategoryId = await _categoryRepository.CreateEntity(category);
+
+                    List<CategoryAttributeCategory> attributes = new List<CategoryAttributeCategory>();
+
+                    foreach (CategoryAttributeCategory item in categoryAttributes)
+                    {
+                        var attribute = new CategoryAttributeCategory
+                        {
+                            CategoryId = newCategoryId,
+                            AttributeId = item.AttributeId,
+                            Value = item.Value ?? "0"
+                        };
+
+                        attributes.Add(attribute);
+                    }
+
+                    await _categoryAttributeCategoryRepository.AddRange(attributes);
+
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction("CategoryList");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(500, "An error occurred while saving the Category.");
+                }
+            }
         }
     }
 }

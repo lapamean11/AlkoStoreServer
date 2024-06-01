@@ -11,6 +11,8 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         private string _name;
 
+        private string _prefixName = null;
+
         public TextInput(
             string name
         ) {
@@ -22,7 +24,8 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             string namePrefix
         )
         {
-            _name = namePrefix + "." + name;
+            _name = name;
+            _prefixName = namePrefix;
         }
 
         public void SetValue(dynamic value)
@@ -32,27 +35,36 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
         private string GetLabel()
         {
+            if (_prefixName != null) 
+            { 
+                return "<label for=" + _name.Replace(" ", "") + ">" + _prefixName + "</label>";
+            }
+
             return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
         }
 
         public string Render()
         {
-            _result += GetLabel();
+            //_result += GetLabel();
 
             HtmlDocument doc = new HtmlDocument();
 
             HtmlNode input = doc.CreateElement("input");
             input.SetAttributeValue("type", "text");
-            input.SetAttributeValue("value", _value.ToString());
+
+            if (_value != null)
+                input.SetAttributeValue("value", _value.ToString());
+
             input.SetAttributeValue("name", _name.Replace(" ", ""));
 
             HtmlNode wrapper = doc.CreateElement("div");
             wrapper.AddClass("input-wrapper");
 
-            wrapper.InnerHtml = input.OuterHtml;
+            wrapper.InnerHtml += GetLabel();
+            wrapper.InnerHtml += input.OuterHtml;
 
             _result += wrapper.OuterHtml;
-            _result += "<br/>";
+            //_result += "<br/>";
 
             return _result;
         }

@@ -3,11 +3,23 @@
 *@
 @{
     Layout = "_AdminPanelLayout";
+    var createNewUrl = "/" + @Model[0].GetType().Name + "/create";
 }
 
 @* <p>Current Controller: @ViewBag.ActionController</p> *@
 
 <div class="admin-list-wrapper">
+    <div class="grid-header flex content-space-between">
+        <h3>List</h3>
+        <div class="grid-actions flex">
+            
+            <a href="@createNewUrl">
+                <button class="create-button button">
+                    CREATE NEW
+                </button>
+            </a>
+        </div>
+    </div>
     <div class="list-header flex">
         @foreach (var item in @Model[0].GetType().GetProperties())
         {
@@ -21,18 +33,11 @@
     }
 
 
-    @*<b>AHAHAHAHAHA @key</b>*@
 
 
     @foreach (var data in @Model)
     {
-       @*  var lol = data;
-        var lol2 = data.ID;
-        var lol3 = data.GetType().Name;
-        var lol4 = lol3; *@
-        @*<a href="/AboutPage">AZAZA</a>*@
         var actionUrl = "/" + data.GetType().Name + "/edit/" + data.ID;
-        @*<a href="@actionUrl">AZAZA</a>*@
         <a href="@actionUrl">
             <div class="flex" style="background-color: @(counter % 2 == 0 ? "silver" : "transparent")">
                 @foreach (var item in data.GetType().GetProperties())

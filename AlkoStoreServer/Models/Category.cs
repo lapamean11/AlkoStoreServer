@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using AlkoStoreServer.Base;
+using AlkoStoreServer.CustomAttributes;
 
 namespace AlkoStoreServer.Models
 {
@@ -16,13 +17,18 @@ namespace AlkoStoreServer.Models
 
         public int? CategoryLevel { get; set; }
 
-        // [NotMapped]
+        [NoRender]
         public List<Category> ChildCategories { get; set; }
 
-        public Category ParentCategory { get; set; }
+        [Reference(typeof(Category))]
+        public Category? ParentCategory { get; set; }
 
-        public List<Product>? Products { get; set; }
+        /*[NoRender]
+        public List<Product>? Products { get; set; }*/
 
-        public List<CategoryAttributeCategory> CategoryAttributes { get; set; }
+        [NoRender]
+        public List<ProductCategory> Products { get; set; }
+
+        public List<CategoryAttributeCategory> CategoryAttributes { get; set; } = new List<CategoryAttributeCategory>();
     }
 }

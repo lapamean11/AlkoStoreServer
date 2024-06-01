@@ -31,6 +31,11 @@ body {
     display: flex;
 }
 
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .flex-col {
     display: flex;
     flex-direction: column;
@@ -42,6 +47,19 @@ body {
 
 .items-center {
     align-items: center;
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+.gap1 {
+    gap: 1rem;
+}
+
+.checkbox {
+    width: fit-content;
 }
 
 body {
@@ -145,4 +163,22 @@ body {
 
 .admin-header {
     background-color: red;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.admin-layout-wrapper form {
+    /*width: 50%;*/
+}
+
+.entity-create-form {
+    width: 50%;
+}
+
+.entity-edit-form {
+    width: 50%;
 }

@@ -41,12 +41,7 @@ namespace AlkoStoreServer.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(
-                    "myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
-                    );
-            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -83,21 +78,34 @@ namespace AlkoStoreServer.Data
                 entity.ToTable("CategoryAttribute");
             });
 
+            modelBuilder.Entity<ProductCategory>(entity =>
+            {
+                entity.HasOne(pc => pc.Product)
+                        .WithMany(p => p.Categories)
+                        .HasForeignKey(pc => pc.ProductId);
+
+                entity.HasOne(pc => pc.Category)
+                        .WithMany(c => c.Products)
+                        .HasForeignKey(pc => pc.CategoryId);
+
+                entity.ToTable("ProductCategory");
+            });
 
             modelBuilder.Entity<Category>(entity => {
 
-                entity.HasMany(c => c.Products)
+                /*entity.HasMany(c => c.Products)
                         .WithMany(p => p.Categories)
                             .UsingEntity<Dictionary<string, object>>(
 
-                        "Product_Category",
+                        "ProductCategory",
                         j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
                         j => j.HasOne<Category>().WithMany().HasForeignKey("CategoryId")
-                    );
+                    );*/
 
-                /*entity.HasMany(c => c.ChildCategories)
-                      .WithOne(c => c.ParentCategory)
-                      .HasForeignKey(c => c.ParentCategoryId);*/
+                entity.HasOne(e => e.ParentCategory)
+                    .WithMany(e => e.ChildCategories)
+                    .HasForeignKey(e => e.ParentCategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.ToTable("Category");
             });

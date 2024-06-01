@@ -18,10 +18,10 @@ namespace AlkoStoreServer.Models
 
         public string Barcode { get; set; }
 
-        [Newtonsoft.Json.JsonIgnore]
+        public int Qty { get; set; }
+
         public Product Product { get; set; }
 
-        [Newtonsoft.Json.JsonIgnore]
         public Store Store { get; set; }
     }
 }

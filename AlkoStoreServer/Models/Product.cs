@@ -13,15 +13,17 @@ namespace AlkoStoreServer.Models
 
         public string Name { get; set; }
 
+        /*[Reference(typeof(Category))]
+        public List<Category> Categories { get; set; } = new List<Category>();*/
+
         [Reference(typeof(Category))]
-        public List<Category> Categories { get; set; }
+        public List<ProductCategory> Categories { get; set; }
 
         [Reference(typeof(Store))]
         public List<ProductStore> ProductStore { get; set; }
 
         public List<Review> Reviews { get; set; }
 
-        public List<ProductAttributeProduct> ProductAttributes { get; set; }
-
+        public List<ProductAttributeProduct> ProductAttributes { get; set; } = new List<ProductAttributeProduct>();
     }
 }

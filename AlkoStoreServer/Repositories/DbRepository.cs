@@ -17,6 +17,11 @@ namespace AlkoStoreServer.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
+        public async Task<AppDbContext> GetContext() 
+        {
+            return _dbContext;
+        }
+
         public async Task<T> GetById(int id)
         {
             T result = await _dbSet.FindAsync(id);
@@ -91,18 +96,47 @@ namespace AlkoStoreServer.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> CreateEntity(T entity)
+        public async Task<int> CreateEntity(T entity)
         { 
             try
             {
-                _dbContext.Add(entity);
+                await _dbContext.AddAsync(entity);
                 await _dbContext.SaveChangesAsync();
 
-                return true;
+                var idProperty = entity.GetType().GetProperty("ID");
+
+                if (idProperty == null)
+                {
+                    throw new InvalidOperationException("Entity does not have an ID property.");
+                }
+
+                return (int)idProperty.GetValue(entity);
             }
             catch (Exception ex) 
             {
-                return false;
+                return 0;
+            }
+        }
+
+        public async Task Add(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddRange(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

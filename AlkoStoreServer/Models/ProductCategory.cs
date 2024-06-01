@@ -8,7 +8,7 @@ namespace AlkoStoreServer.Models
     {
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int ID { get; set; }
 
         public int ProductId { get; set; }
 

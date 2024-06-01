@@ -29,15 +29,75 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
         }
 
-        public string Render()
+        /*public string Render()
         {
             _result = GetLabel();
 
             List<string> selected = new List<string>();
-            foreach (var item in _value)
-            { 
+            var lol = _value;
+            if (_value != null)
+            {
+                foreach (var item in _value)
+                {
+                    var id = item.GetType().GetProperty("ID").GetValue(item, null);
+                    selected.Add(id.ToString());
+                }
+            }
+
+            HtmlDocument doc = new HtmlDocument();
+
+            int counter = 0;
+            foreach (var item in _selectData)
+            {
                 var id = item.GetType().GetProperty("ID").GetValue(item, null);
-                selected.Add(id.ToString());
+                var name = item.GetType().GetProperty("Name").GetValue(item, null);
+
+                HtmlNode input = doc.CreateElement("input");
+                HtmlNode hiddenInput = doc.CreateElement("input");
+
+                hiddenInput.SetAttributeValue("type", "hidden");
+                hiddenInput.SetAttributeValue("name", _name + "[" + counter + "].ID");
+                hiddenInput.SetAttributeValue("value", id.ToString());
+
+                input.SetAttributeValue("type", "checkbox");
+                input.SetAttributeValue("name", _name + "[" + counter + "].ID");
+                input.SetAttributeValue("value", id.ToString());
+
+                if (selected.Contains(id.ToString()))
+                {
+                    input.SetAttributeValue("checked", "checked");
+                }
+
+                _result += "<div>" + name + "</div>";
+                _result += hiddenInput.OuterHtml;
+                _result += input.OuterHtml;
+
+                counter++;
+            }
+
+            HtmlNode wrapper = doc.CreateElement("div");
+            wrapper.AddClass("input-wrapper");
+            wrapper.AddClass("multiselect-wrapper");
+
+            wrapper.InnerHtml = _result;
+
+            return wrapper.OuterHtml;
+        }*/
+
+        public string Render()
+        {
+            //_result = GetLabel();
+
+            List<string> selected = new List<string>();
+
+            var type = _selectData.First().GetType().Name;
+            if (_value != null)
+            {
+                foreach (var item in _value)
+                {
+                    var id = item.GetType().GetProperty(type + "Id").GetValue(item, null);
+                    selected.Add(id.ToString());
+                }
             }
 
             HtmlDocument doc = new HtmlDocument();
@@ -45,13 +105,16 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             Select.SetAttributeValue("name", _name);
             Select.Attributes.Add("multiple", "multiple");
 
+            int counter = 0;
             foreach (var item in _selectData)
             {
+
                 var optionElement = doc.CreateElement("option");
                 var id = item.GetType().GetProperty("ID").GetValue(item, null);
                 var name = item.GetType().GetProperty("Name").GetValue(item, null);
 
                 optionElement.Attributes.Add("value", id.ToString());
+                //optionElement.SetAttributeValue("name", "Categories"+ "[" + counter + "]" + ".ID");
                 optionElement.InnerHtml = name.ToString();
 
                 if (selected.Contains(id.ToString()))
@@ -60,12 +123,16 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
                 }
 
                 Select.AppendChild(optionElement);
+                counter++;
             }
 
             HtmlNode wrapper = doc.CreateElement("div");
             wrapper.AddClass("input-wrapper");
+            wrapper.AddClass("multiselect-wrapper");
 
-            wrapper.AppendChild(Select);
+            wrapper.InnerHtml += GetLabel();
+            wrapper.InnerHtml += Select.OuterHtml;
+            //wrapper.AppendChild(Select);
 
             _result += wrapper.OuterHtml;
 

@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using AlkoStoreServer.Data;
+using System.Linq.Expressions;
 
 namespace AlkoStoreServer.Repositories.Interfaces
 {
@@ -18,6 +19,14 @@ namespace AlkoStoreServer.Repositories.Interfaces
 
         public Task SaveEntity(T entity);
 
-        public Task<bool> CreateEntity(T entity);
+        public Task<int> CreateEntity(T entity);
+
+        public Task Add(T entity);
+
+        public Task AddRange(IEnumerable<T> entities);
+
+        public Task<AppDbContext> GetContext();
+
+        public Task DeleteAsync(int id);
     }
 }
