@@ -3,7 +3,7 @@
 *@
 @{
     Layout = "_AdminPanelLayout";
-    var createNewUrl = "/" + @Model[0].GetType().Name + "/create";
+    var createNewUrl = "/" + @Model.GetType().GetGenericArguments()[0].Name + "/create";
 }
 
 @* <p>Current Controller: @ViewBag.ActionController</p> *@
@@ -21,9 +21,9 @@
         </div>
     </div>
     <div class="list-header flex">
-        @foreach (var item in @Model[0].GetType().GetProperties())
+        @foreach (var item in @Model.GetType().GetGenericArguments()[0].GetProperties())
         {
-            <div class="column-name" style="width: @((100 / @Model[0].GetType().GetProperties().Length).ToString() + "%")">
+            <div class="column-name" style="width: @((100 / @Model.GetType().GetGenericArguments()[0].GetProperties().Length).ToString() + "%")">
                 @item.Name
             </div>
         }

@@ -10,8 +10,8 @@ namespace AlkoStoreServer.Middleware
         private readonly RequestDelegate _next;
 
         private readonly string[] _exceptions = {
-            "/api/user/register",
-            "/api/get/products"
+            /*"/api/user/register",
+            "/api/get/products"*/
         };
 
         public FirebaseJwtMiddleware(RequestDelegate next)
@@ -41,14 +41,14 @@ namespace AlkoStoreServer.Middleware
                 }
                 else
                 {
-                    await _next(context);
-                    //context.Response.StatusCode = 401;
+                    // await _next(context);
+                    context.Response.StatusCode = 401;
                 }
             }
             catch (FirebaseAuthException ex)
             {
-                await _next(context);
-                //context.Response.StatusCode = 401;
+                // await _next(context);
+                context.Response.StatusCode = 401;
             }
         }
     }

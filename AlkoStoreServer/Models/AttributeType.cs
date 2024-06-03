@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using AlkoStoreServer.Base;
 
+
 namespace AlkoStoreServer.Models
 {
     public class AttributeType : Model
     {
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        [Key]
+        //[DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+        //[Key]
         public int ID { get; set; }
 
         public string Name { get; set; }
@@ -21,7 +22,5 @@ namespace AlkoStoreServer.Models
 
         [Newtonsoft.Json.JsonIgnore]
         public List<CategoryAttribute> CategoryAttribute { get; set; }
-
-
     }
 }

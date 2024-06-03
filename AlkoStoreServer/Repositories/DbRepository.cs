@@ -1,5 +1,6 @@
 ﻿using AlkoStoreServer.Base;
 using AlkoStoreServer.Data;
+using AlkoStoreServer.Models;
 using AlkoStoreServer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -106,6 +107,46 @@ namespace AlkoStoreServer.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<TResult>> GetWithInclude<TResult>(
+            Expression<Func<T, TResult>> selector,
+            params Expression<Func<T, object>>[] includeProperties
+        )
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            var result = await query.Select(selector).ToListAsync();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<TResult>> GetWithInclude<TResult>(
+            Expression<Func<T, bool>> filter,
+            Expression<Func<T, TResult>> selector,
+            params Expression<Func<T, object>>[] includeProperties
+        )
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            var result = await query.Select(selector).ToListAsync();
+
+            return result;
+        }
+
         public async Task SaveEntity(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
@@ -154,6 +195,12 @@ namespace AlkoStoreServer.Repositories
                 _dbSet.Remove(entity);
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task Update(T entity)
+        {
+            _dbSet.Update(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -5,7 +5,7 @@
 <div class="text-center">
    
 
-    <form action="/user/login" method="POST">
+    <form action="/adminuser/login" method="POST">
         @Html.AntiForgeryToken()
         <div>
             <label for="Username">Username</label>
@@ -18,7 +18,7 @@
         <button type="submit">Login</button>
     </form>
 
-    <form action="/user/register" method="POST">
+    <form action="/adminuser/register" method="POST">
         @Html.AntiForgeryToken()
         <button type="submit">Register</button>
     </form>

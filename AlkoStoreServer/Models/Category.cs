@@ -13,9 +13,13 @@ namespace AlkoStoreServer.Models
 
         public string? Name { get; set; }
 
+        public string ImgUrl { get; set; }
+
+        [NoRender]
         [Newtonsoft.Json.JsonIgnore]
         public int? ParentCategoryId { get; set; }
 
+        [NoRender]
         public int? CategoryLevel { get; set; }
 
         [NoRender]
@@ -24,9 +28,6 @@ namespace AlkoStoreServer.Models
         [Newtonsoft.Json.JsonIgnore]
         [Reference(typeof(Category))]
         public Category? ParentCategory { get; set; }
-
-        /*[NoRender]
-        public List<Product>? Products { get; set; }*/
 
         [NoRender]
         public List<ProductCategory> Products { get; set; }

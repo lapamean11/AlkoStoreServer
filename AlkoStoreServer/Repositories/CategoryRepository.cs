@@ -24,7 +24,6 @@ namespace AlkoStoreServer.Repositories
                     {
                         ID = c.ID,
                         Name = c.Name,
-                        ParentCategoryId = c.ParentCategoryId,
                         CategoryLevel = c.CategoryLevel,
                         CategoryAttributes = c.CategoryAttributes
                             .Select(cac => new AttributesProjection

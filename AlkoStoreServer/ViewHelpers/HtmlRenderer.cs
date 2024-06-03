@@ -10,6 +10,7 @@ using HtmlAgilityPack;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace AlkoStoreServer.ViewHelpers
@@ -30,6 +31,7 @@ namespace AlkoStoreServer.ViewHelpers
             { typeof(List<ProductCategory>), typeof(MultiSelectInput) },
             { typeof(AttributeType), typeof(SelectInput) },
             { typeof(Category), typeof(SelectInput) },
+            { typeof(Role), typeof(SelectInput) }
         };
 
         public HtmlRenderer(IAttributeService attributeService)
@@ -51,38 +53,47 @@ namespace AlkoStoreServer.ViewHelpers
             form.SetAttributeValue("method", "POST");
             form.AddClass("entity-edit-form");
 
+            HtmlNode button = doc.CreateElement("button");
+            HtmlTextNode buttonText = doc.CreateTextNode("Save");
+            button.SetAttributeValue("type", "submit");
+            button.AddClass("bg-green");
+            button.AppendChild(buttonText);
 
+            form.InnerHtml += button.OuterHtml;
 
             PropertyInfo[] properties = model.GetType().GetProperties();
 
             foreach (var data in properties)
             {
-                var value = data.GetValue(model);
-
-                if (value != null)
+                if (!Attribute.IsDefined(data, typeof(NoRenderAttribute)))
                 {
-                    IInput input = DefineInput(data);
+                    var value = data.GetValue(model);
 
-                    if (input is ISelectInput selectInput)
+                    if (value != null)
                     {
-                        var key = data.Name;
-                        var relatedData = _attributeService.GetFormRelatedData(model);
+                        IInput input = DefineInput(data);
 
-                        if (relatedData.TryGetValue(key, out List<Model> values))
+                        if (input is ISelectInput selectInput)
                         {
-                            selectInput.SetSelectData(values);
+                            var key = data.Name;
+                            var relatedData = _attributeService.GetFormRelatedData(model);
+
+                            if (relatedData.TryGetValue(key, out List<Model> values))
+                            {
+                                selectInput.SetSelectData(values);
+                            }
                         }
+
+                        if (input != null) input.SetValue(value);
+
+                        InputRenderer renderer = new InputRenderer(input);
+
+                        html.Append(renderer.Render());
                     }
-
-                    if (input != null) input.SetValue(value);
-
-                    InputRenderer renderer = new InputRenderer(input);
-
-                    html.Append(renderer.Render());
                 }
             }
 
-            form.InnerHtml = html.ToString();
+            form.InnerHtml += html.ToString();
 
             return new HtmlString(form.OuterHtml);
         }

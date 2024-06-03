@@ -1,4 +1,5 @@
 ﻿using AlkoStoreServer.Base;
+using AlkoStoreServer.Models;
 using AlkoStoreServer.ViewHelpers.Inputs.Interfaces;
 using HtmlAgilityPack;
 
@@ -31,16 +32,26 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
             List<string> selected = new List<string>();
 
+            string entityKey = _selectData[0].GetType().Name + "Id";
+            /*var lola = _selectData[0].GetType();
+
+            if (_selectData[0].GetType() == typeof(Product))
+            {
+
+            }*/
+
             if (_value != null)
             {
                 foreach (var item in _value)
                 {
-                    var id = item.GetType().GetProperty("StoreId").GetValue(item, null);
+                    var id = item.GetType().GetProperty(entityKey).GetValue(item, null); // StoreId
                     selected.Add(id.ToString());
                 }
             }
 
             int counter = 0;
+            var lol = _selectData;
+            var lol2 = selected.ToList();
             foreach (var item in _selectData)
             {
                 var id = item.GetType().GetProperty("ID").GetValue(item, null).ToString();
@@ -87,7 +98,7 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
 
                     foreach (var data in _value)
                     {
-                        if (data.StoreId == Int32.Parse(id))
+                        if (data.GetType().GetProperty(entityKey).GetValue(data, null) == Int32.Parse(id)) //StoreId
                         {
                             priceInput.SetValue(Convert.ToString(data.Price));
                             barcodeInput.SetValue(Convert.ToString(data.Barcode));
@@ -96,8 +107,6 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
                     }
                 }
 
-                //inputWrapper.InnerHtml += StoreName.OuterHtml;
-                //inputWrapper.InnerHtml += checkBox.OuterHtml;
                 inputWrapper.InnerHtml += titleWrapper.OuterHtml;
                 inputWrapper.InnerHtml += priceInput.Render();
                 inputWrapper.InnerHtml += barcodeInput.Render();
