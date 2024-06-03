@@ -13,6 +13,8 @@ namespace AlkoStoreServer.Models
 
         public string Name { get; set; }
 
+        public string ImgUrl { get; set; }
+
         /*[Reference(typeof(Category))]
         public List<Category> Categories { get; set; } = new List<Category>();*/
 

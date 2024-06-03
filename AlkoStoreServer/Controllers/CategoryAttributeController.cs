@@ -1,4 +1,5 @@
 ﻿using AlkoStoreServer.Base;
+using AlkoStoreServer.Data;
 using AlkoStoreServer.Models;
 using AlkoStoreServer.Repositories;
 using AlkoStoreServer.Repositories.Interfaces;
@@ -81,6 +82,39 @@ namespace AlkoStoreServer.Controllers
             IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(new CategoryAttribute());
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
+        }
+
+        [HttpPost("edit/save/{id}")]
+        [Authorize]
+        public async Task<IActionResult> EditCategoryAttributeSave(int id, CategoryAttribute attribute)
+        {
+            AppDbContext context = await _categoryAttributeRepository.GetContext();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    CategoryAttribute attributeToUpdate = await _categoryAttributeRepository.GetById(id,
+                        a => a.Include(e => e.AttributeType)
+                    );
+
+                    attributeToUpdate.Name = attribute.Name;
+                    attributeToUpdate.Identifier = attribute.Identifier;
+                    attributeToUpdate.TypeId = attribute.AttributeType.ID;
+
+
+                    await _categoryAttributeRepository.Update(attributeToUpdate);
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction("CategoryAttributeList");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(500, "An error occurred while saving the store.");
+                }
+            }
         }
 
         [HttpPost("create/save")]

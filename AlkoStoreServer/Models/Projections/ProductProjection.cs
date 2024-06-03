@@ -6,6 +6,10 @@
 
         public string? Name { get; set; }
 
+        public decimal? LowestPrice { get; set; }
+
+        public string ImgUrl { get; set; }
+
         public List<StoreProjection>? Stores { get; set; }
 
         public List<CategoryProjection>? Categories { get; set; }

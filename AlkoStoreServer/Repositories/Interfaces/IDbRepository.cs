@@ -11,6 +11,17 @@ namespace AlkoStoreServer.Repositories.Interfaces
 
         public Task<IEnumerable<T>> GetWithInclude(params Func<IQueryable<T>, IQueryable<T>>[] includeProperties);
 
+        public Task<IEnumerable<TResult>> GetWithInclude<TResult>(
+            Expression<Func<T, TResult>> selector,
+            params Expression<Func<T, object>>[] includeProperties
+        );
+
+        public Task<IEnumerable<TResult>> GetWithInclude<TResult>(
+            Expression<Func<T, bool>> filter,
+            Expression<Func<T, TResult>> selector,
+            params Expression<Func<T, object>>[] includeProperties
+        );
+
         public Task<T> GetById(int id);
 
         public Task<T> GetById(int id, params Expression<Func<T, object>>[] includeProperties);
@@ -30,5 +41,7 @@ namespace AlkoStoreServer.Repositories.Interfaces
         public Task<AppDbContext> GetContext();
 
         public Task DeleteAsync(int id);
+
+        public Task Update(T entity);
     }
 }

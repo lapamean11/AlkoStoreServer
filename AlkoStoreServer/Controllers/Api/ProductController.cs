@@ -4,6 +4,7 @@ using AlkoStoreServer.Models.Projections;
 using AlkoStoreServer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -50,17 +51,19 @@ namespace AlkoStoreServer.Controllers.Api
         [HttpGet("get/product/{id}")]
         public async Task<IActionResult> GetProductWithReviews(int id)
         {
-            ProductProjection product3 = await _productRepository.GetById(id,
+            ProductProjection product = await _productRepository.GetById(id,
                    u => new ProductProjection 
                    {
                        ID = u.ID,
                        Name = u.Name,
+                       ImgUrl = u.ImgUrl,
                        Stores = u.ProductStore.Select(s => new StoreProjection
                        {
                            ID = s.Store.ID,
                            Name = s.Store.Name,
                            Price = s.Price,
                            Barcode = s.Barcode,
+                           StoreLink = s.Store.StoreLink,
                            Qty = s.Qty,
                        }).ToList(),
                        ProductAttributes = u.ProductAttributes.Select(pa => new AttributesProjection
@@ -79,8 +82,7 @@ namespace AlkoStoreServer.Controllers.Api
                            AddetAt = DateTime.Now, /////////////////
                            User = new UserProjection
                            {
-                               Name = s.User.Name,
-                               Username = s.User.Username
+                               Email = s.User.Email
                            }
                        }).ToList()
                    },
@@ -89,7 +91,38 @@ namespace AlkoStoreServer.Controllers.Api
                    p => p.Reviews
             );
 
-            var json = BaseRepository.SerializeToJson(product3);
+            decimal? lowestPrice = product.Stores.Any() ? product.Stores.Min(s => s.Price) : null;
+            product.LowestPrice = lowestPrice;
+
+            var json = BaseRepository.SerializeToJson(product);
+
+            return Ok(json);
+        }
+
+        [HttpGet("get/products/search/{key}")]
+        public async Task<IActionResult> GetProductSearch(string key)
+        {
+            List<ProductProjection> products = (List<ProductProjection>) await _productRepository.GetWithInclude(
+                product => product.Name.Contains(key),
+                product => new ProductProjection 
+                { 
+                    ID = product.ID,
+                    Name = product.Name,
+                    ImgUrl = product.ImgUrl,
+                    Stores = product.ProductStore.Select(sp => new StoreProjection
+                    {
+                        Price = sp.Price
+                    }).ToList(),
+                },
+                product => product.ProductStore
+            );
+
+            foreach (var product in products)
+            {
+                product.LowestPrice = product.Stores.Any() ? product.Stores.Min(s => s.Price) : (decimal?)null;
+            }
+
+            var json = BaseRepository.SerializeToJson(products);
 
             return Ok(json);
         }

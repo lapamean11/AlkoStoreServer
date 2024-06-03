@@ -104,6 +104,70 @@ namespace AlkoStoreServer.Controllers
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }
 
+        [HttpPost("edit/save/{id}")]
+        [Authorize]
+        public async Task<IActionResult> EditCategorySave(int id, Category category)
+        {
+            AppDbContext context = await _categoryRepository.GetContext();
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    Category categoryToUppdate = await _categoryRepository.GetById(id,
+                        c => c.Include(e => e.CategoryAttributes)
+                    );
+
+                    categoryToUppdate.Name = category.Name;
+                    categoryToUppdate.ParentCategoryId = category.ParentCategory.ID;
+
+                    List<CategoryAttributeCategory> newAttributes = category.CategoryAttributes;
+                    List<CategoryAttributeCategory> existingAttributes = categoryToUppdate.CategoryAttributes;
+
+                    List<CategoryAttributeCategory> attributesToRemove = existingAttributes
+                        .Where(ea => !newAttributes.Any(na => na.AttributeId == ea.AttributeId))
+                        .ToList();
+
+                    foreach (var attribute in attributesToRemove)
+                    {
+                        categoryToUppdate.CategoryAttributes.Remove(attribute);
+                    }
+
+                    foreach (var newAttribute in newAttributes)
+                    {
+                        var existingAttribute = existingAttributes.FirstOrDefault(ea => ea.AttributeId == newAttribute.AttributeId);
+                        if (existingAttribute == null)
+                        {
+                            categoryToUppdate.CategoryAttributes.Add(new CategoryAttributeCategory
+                            {
+                                CategoryId = id,
+                                AttributeId = newAttribute.AttributeId,
+                                Value = newAttribute.Value
+                            });
+                        }
+                        else
+                        {
+                            existingAttribute.Value = newAttribute.Value ?? "0";
+                        }
+                    }
+
+                    var lola = categoryToUppdate;
+
+                    await _categoryRepository.Update(categoryToUppdate);
+
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction("CategoryList");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(500, "An error occurred while saving the category.");
+                }
+            }
+        }
+
         [HttpPost("create/save")]
         [Authorize]
         public async Task<IActionResult> SaveNewCategory(Category category)

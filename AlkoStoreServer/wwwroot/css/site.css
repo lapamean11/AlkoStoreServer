@@ -31,6 +31,11 @@ body {
     display: flex;
 }
 
+.flex-reverse {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
 .flex-wrap {
     display: flex;
     flex-wrap: wrap;
@@ -60,6 +65,22 @@ p {
 
 .checkbox {
     width: fit-content;
+}
+
+/*.sidebar-item {
+    margin-top: 1rem;
+}*/
+
+.bg-red {
+    background-color: brown;
+    color: white;
+    padding: 5px;
+}
+
+.bg-green {
+    background-color: mediumseagreen;
+    color: white;
+    padding: 5px;
 }
 
 body {
@@ -154,6 +175,7 @@ body {
     width: 70px;
     height: 100vh;
     background-color: cadetblue;
+    gap: 1rem;
 }
 
 .admin-wrapper .sidebar-image svg {

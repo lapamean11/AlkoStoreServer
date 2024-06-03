@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-//using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
+using AlkoStoreServer.ViewHelpers.Interfaces;
 
 namespace AlkoStoreServer.Controllers
 {
-    [Route("user")]
+    [Route("adminuser")]
     public class UserController : BaseController
     {
         private readonly IDbRepository<AdminUser> _adminUserRepository;
@@ -20,15 +22,19 @@ namespace AlkoStoreServer.Controllers
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly IHtmlRenderer _htmlRenderer;
+
         public UserController(
             IDbRepository<AdminUser> adminUserRepository,
             IDbRepository<Role> roleRepository,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            IHtmlRenderer htmlRenderer
         ) 
         {
             _adminUserRepository = adminUserRepository;
             _roleRepository = roleRepository;
             _httpContextAccessor = httpContextAccessor;
+            _htmlRenderer = htmlRenderer;
         }
 
         [HttpPost("login")]
@@ -79,7 +85,7 @@ namespace AlkoStoreServer.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpPost("register")]
+        /*[HttpPost("register")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(AdminRegisterViewModel model)
         {
@@ -91,7 +97,8 @@ namespace AlkoStoreServer.Controllers
                 AdminUser user = new AdminUser
                 {
                     Username = "admin",
-                    RoleId = roles.Where(item => item.Identifier == "admin").ToList().FirstOrDefault().ID,
+                    //RoleId = roles.Where(item => item.Identifier == "admin").ToList().FirstOrDefault().ID,
+                    RoleId = 1,
                     CreatedAt = DateTime.Now
                 };
 
@@ -101,6 +108,117 @@ namespace AlkoStoreServer.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+        }*/
+
+        [HttpGet("list")]
+        [Authorize]
+        public async Task<IActionResult> AdminUserList()
+        {
+            List<AdminUser> users = (List<AdminUser>)await _adminUserRepository.GetWithInclude();
+
+            return View("Views/Layouts/ListLayout.cshtml", users);
+        }
+
+        [HttpGet("edit/{id}")]
+        [Authorize]
+        public async Task<IActionResult> AdminUserEdit(int id)
+        {
+            AdminUser user = await _adminUserRepository.GetById(id,
+                u => u.Include(u => u.Role)
+            );
+
+            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(user);
+            ViewBag.Model = user;
+
+            return View("Views/Layouts/EditLayout.cshtml", htmlResult);
+        }
+
+        [HttpPost("delete/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteAdminUser(int id)
+        {
+            try
+            {
+                await _adminUserRepository.DeleteAsync(id);
+
+                return RedirectToAction("AdminUserList");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("create")]
+        [Authorize]
+        public async Task<IActionResult> CreateNewAdminUser()
+        {
+            AdminUser user = new AdminUser();
+
+            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(user);
+
+            return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
+        }
+
+        [HttpPost("create/save")]
+        [Authorize]
+        public async Task<IActionResult> SaveNewAdminUser(AdminUser user)
+        {
+            using (var transaction = await (
+                await _adminUserRepository.GetContext()
+            ).Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    user.RoleId = user.Role.ID;
+                    user.SetPassword(user.Password);
+                    user.CreatedAt = DateTime.Now;
+                    user.Role = null;
+
+                    await _adminUserRepository.CreateEntity(user);
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction("AdminUserList");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(500, "An error occurred while saving the Category.");
+                }
+            }
+        }
+
+        [HttpPost("edit/save/{id}")]
+        [Authorize]
+        public async Task<IActionResult> EditAdminUserSave(int id, AdminUser user)
+        {
+            using (var transaction = await (
+                await _adminUserRepository.GetContext()
+            ).Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    AdminUser userToUpdate = await _adminUserRepository.GetById(id,
+                        u => u.Include(u => u.Role)
+                    );
+
+                    userToUpdate.Username = user.Username;
+                    userToUpdate.RoleId = user.Role.ID;
+                    userToUpdate.SetPassword(user.Password);
+
+                    await _adminUserRepository.Update(userToUpdate);
+                    await transaction.CommitAsync();
+
+                    return RedirectToAction("AdminUserList");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+
+                    return StatusCode(500, "An error occurred while saving the category.");
+                }
+            }
         }
     }
 }

@@ -39,6 +39,8 @@ namespace AlkoStoreServer.Data
 
         public DbSet<AdminUser> AdminUser { get; set; }
 
+        public DbSet<User> User { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
@@ -46,6 +48,16 @@ namespace AlkoStoreServer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AttributeType>(entity =>
+            {
+                entity.ToTable("AttributeType");
+            });
+
+            modelBuilder.Entity<Role>(entity => {
+
+                entity.ToTable("Role");
+            });
+
             modelBuilder.Entity<Product>(entity => {
 
                 entity.ToTable("Product");
@@ -153,7 +165,7 @@ namespace AlkoStoreServer.Data
                         .WithMany(s => s.ProductStore)
                         .HasForeignKey(ps => ps.StoreId);
 
-                entity.ToTable("Product_Store");
+                entity.ToTable("ProductStore");
             });
 
             modelBuilder.Entity<Review>(entity => {
@@ -168,6 +180,20 @@ namespace AlkoStoreServer.Data
 
                 entity.ToTable("Review");
             });
+
+            /*modelBuilder.Entity<Category>().HasData(
+                new Category { ID = 1, Name = "BaseCategory", ParentCategoryId = 1, CategoryLevel = 0, ImgUrl = "http://test.link" }
+            );
+
+            modelBuilder.Entity<AttributeType>().HasData(
+                new AttributeType { ID = 1, Name = "Boolean", Type = "bool"},
+                new AttributeType { ID = 2, Name = "Text", Type = "text" }
+            );
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { ID = 1, Name = "Admin", Identifier = "admin" },
+                new Role { ID = 2, Name = "Moderator", Identifier = "moderator" }
+            );*/
 
             base.OnModelCreating(modelBuilder);
         }

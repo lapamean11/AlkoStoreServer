@@ -32,24 +32,42 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddHttpContextAccessor();
 
+// Use IConfiguration to access app settings
+var configuration = builder.Configuration;
+
+var firebaseConfig = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("Config/Firebase/firebase.json", optional: true, reloadOnChange: true)
+    .Build();
+
+var dbConfig = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("Config/Database/db.json", optional: true, reloadOnChange: true)
+    .Build();
+
+// Load Firebase Admin SDK credentials from a secure location
+var firebaseCredentialPath = Path.Combine(builder.Environment.ContentRootPath, "Config", "Firebase", "firebase.json");
+var firebaseCredential = GoogleCredential.FromFile(firebaseCredentialPath);
+
+var dbPath = Path.Combine(builder.Environment.ContentRootPath, dbConfig["DbName"]);
+// var lola = firebaseCredential.;
+
 FirebaseApp.Create(new AppOptions()
 {
-    Credential = GoogleCredential.FromFile(
-        "Config\\firebase.json"
-        ),
-    ProjectId = "testproj-6693e"
+    Credential = firebaseCredential,
+    ProjectId = firebaseConfig["project_id"]
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            options.Authority = "https://securetoken.google.com/testproj-6693e";
+            options.Authority = "https://securetoken.google.com/" + firebaseConfig["project_id"];
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = "https://securetoken.google.com/testproj-6693e",
+                ValidIssuer = "https://securetoken.google.com/" + firebaseConfig["project_id"],
                 ValidateAudience = true,
-                ValidAudience = "testproj-6693e",
+                ValidAudience = firebaseConfig["project_id"],
                 ValidateLifetime = true
             };
         });
@@ -59,8 +77,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         {
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = "LoginCookie";
-            options.LoginPath = "/Account/Login"; // Customize as needed
-            options.LogoutPath = "/Account/Logout"; // Customize as needed
+            options.LoginPath = "/Account/Login";
+            options.LogoutPath = "/Account/Logout";
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         });
 
@@ -70,16 +88,20 @@ builder.Services.AddAuthorization(options =>
          policy.Requirements.Add(new AdminRequirement()));
 });
 
+//var lola = dbConfig["DbConnectionString"];
+
+/*builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(dbConfig["DbConnectionString"])
+);*/
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+    options.UseSqlite("Data Source="+dbPath));
 
 builder.Services.AddScoped(typeof(IDbRepository<>), typeof(DbRepository<>));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
+/*builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
 {
     ApiKey = "AIzaSyCbTg4ZTgKQ20oZXGu5nhPJDfQYv71JwSg",
     AuthDomain = "testproj-6693e.firebaseapp.com",
@@ -88,7 +110,7 @@ builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
         new EmailProvider(),
         new GoogleProvider()
     }
-}));
+}));*/
 
 builder.Services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
 builder.Services.AddSingleton<IInstanceResolver, InstanceResolver>();
@@ -97,6 +119,8 @@ builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 
 builder.Services.AddScoped<IHtmlRenderer, HtmlRenderer>();
+
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
 var app = builder.Build();
 
@@ -129,10 +153,5 @@ app.MapControllerRoute(
     name: "Test",
     pattern: "/test",
     defaults: new { controller = "Home", action = "Test" });
-
-/*app.MapControllerRoute(
-    name: "Api_Get_Products",
-    pattern: "/api/get/products",
-    defaults: new { controller = "Api/ProductController", action = "GetProducts" });*/
 
 app.Run();

@@ -14,8 +14,6 @@ namespace AlkoStoreServer.Models
 
         public string Identifier { get; set; }
 
-        public List<User> Users { get; set; }
-
         public List<AdminUser> AdminUsers { get; set; }
     }
 }

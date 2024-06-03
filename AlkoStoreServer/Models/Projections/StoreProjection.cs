@@ -6,13 +6,13 @@
 
         public string? Name { get; set; }
 
-        public string? Country { get; set; }
+        public string? StoreLink { get; set; }
 
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
 
         public string? Barcode { get; set; }
 
-        public int Qty { get; set; }
+        public int? Qty { get; set; }
 
         public List<ProductProjection>? Products { get; set; }
     }

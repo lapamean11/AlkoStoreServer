@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Identity;
 using AlkoStoreServer.Base;
+using AlkoStoreServer.CustomAttributes;
 
 namespace AlkoStoreServer.Models
 {
@@ -17,10 +18,12 @@ namespace AlkoStoreServer.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [NoRender]
         public int RoleId { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
+        [Reference(typeof(Role))]
         public Role Role { get; set; }
 
         public void SetPassword(string password)
