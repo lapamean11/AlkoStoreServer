@@ -26,7 +26,7 @@ namespace AlkoStoreServer.Services
 
         public async Task<string> GetUserNameByEmail(string email)
         {
-            var kek = await _firestoreDb.Collection("users").WhereEqualTo("email", email).GetSnapshotAsync();
+            var kek = await _firestoreDb.Collection("users").WhereEqualTo("Email", email).GetSnapshotAsync();
 
             var user = kek[0].ConvertTo<Dictionary<string, string>>();
 

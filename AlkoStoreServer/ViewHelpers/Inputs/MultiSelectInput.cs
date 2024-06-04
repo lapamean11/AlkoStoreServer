@@ -4,19 +4,18 @@ using HtmlAgilityPack;
 
 namespace AlkoStoreServer.ViewHelpers.Inputs
 {
-    public class MultiSelectInput : ISelectInput
+    public class MultiSelectInput : Input, ISelectInput
     {
-        private dynamic _value;
-
-        private string _result = string.Empty;
-
-        private string _name;
-
         private List<Model> _selectData;
 
-        public MultiSelectInput(string name)
+        public MultiSelectInput(string name) : base(name)
         {
-            _name = name;
+            
+        }
+
+        public MultiSelectInput(string name, string namePrefix) : base(name, namePrefix)
+        {
+
         }
 
         public void SetSelectData(List<Model> selectData)
@@ -24,70 +23,8 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             _selectData = selectData;
         }
 
-        private string GetLabel()
-        {
-            return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
-        }
-
-        /*public string Render()
-        {
-            _result = GetLabel();
-
-            List<string> selected = new List<string>();
-            var lol = _value;
-            if (_value != null)
-            {
-                foreach (var item in _value)
-                {
-                    var id = item.GetType().GetProperty("ID").GetValue(item, null);
-                    selected.Add(id.ToString());
-                }
-            }
-
-            HtmlDocument doc = new HtmlDocument();
-
-            int counter = 0;
-            foreach (var item in _selectData)
-            {
-                var id = item.GetType().GetProperty("ID").GetValue(item, null);
-                var name = item.GetType().GetProperty("Name").GetValue(item, null);
-
-                HtmlNode input = doc.CreateElement("input");
-                HtmlNode hiddenInput = doc.CreateElement("input");
-
-                hiddenInput.SetAttributeValue("type", "hidden");
-                hiddenInput.SetAttributeValue("name", _name + "[" + counter + "].ID");
-                hiddenInput.SetAttributeValue("value", id.ToString());
-
-                input.SetAttributeValue("type", "checkbox");
-                input.SetAttributeValue("name", _name + "[" + counter + "].ID");
-                input.SetAttributeValue("value", id.ToString());
-
-                if (selected.Contains(id.ToString()))
-                {
-                    input.SetAttributeValue("checked", "checked");
-                }
-
-                _result += "<div>" + name + "</div>";
-                _result += hiddenInput.OuterHtml;
-                _result += input.OuterHtml;
-
-                counter++;
-            }
-
-            HtmlNode wrapper = doc.CreateElement("div");
-            wrapper.AddClass("input-wrapper");
-            wrapper.AddClass("multiselect-wrapper");
-
-            wrapper.InnerHtml = _result;
-
-            return wrapper.OuterHtml;
-        }*/
-
         public string Render()
         {
-            //_result = GetLabel();
-
             List<string> selected = new List<string>();
 
             var type = _selectData.First().GetType().Name;
@@ -137,11 +74,6 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             _result += wrapper.OuterHtml;
 
             return _result;
-        }
-
-        public void SetValue(dynamic value)
-        {
-            _value = value;
         }
     }
 }

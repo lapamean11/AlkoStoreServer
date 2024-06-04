@@ -71,7 +71,8 @@ namespace AlkoStoreServer.Controllers
                               .ThenInclude(e => e.AttributeType)
             );
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(product);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(product);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(product);
             ViewBag.Model = product;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
@@ -79,6 +80,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("delete/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
             try
@@ -113,13 +115,16 @@ namespace AlkoStoreServer.Controllers
                 product.ProductAttributes.Add(productAttr);
             }
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(product);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(product);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(product);
+            ViewBag.Model = product;
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }
 
         [HttpPost("edit/save/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> EditProductSave(int id, Product product)
         {
             AppDbContext context = await _productRepository.GetContext();

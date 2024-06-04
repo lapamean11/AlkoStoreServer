@@ -7,9 +7,11 @@ namespace AlkoStoreServer.ViewHelpers.Interfaces
 {
     public interface IHtmlRenderer
     {
-        public IHtmlContent RenderEditForm(Model model);
+        /*public IHtmlContent RenderEditForm(Model model);
 
-        public IHtmlContent RenderCreateForm(Model model);
+        public IHtmlContent RenderCreateForm(Model model);*/
+
+        public IHtmlContent RenderForm(Model model);
 
         public IInput DefineInput(PropertyInfo data);
     }

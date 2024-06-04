@@ -3,44 +3,17 @@ using HtmlAgilityPack;
 
 namespace AlkoStoreServer.ViewHelpers.Inputs
 {
-    public class CheckBoxInput : IInput
+    public class CheckBoxInput : Input, IInput
     {
-        private dynamic _value;
 
-        private string _result = string.Empty;
+        public CheckBoxInput(string name) : base(name) 
+        { 
 
-        private string _name;
-
-        private string _prefixName = null;
-
-        public CheckBoxInput(
-            string name
-        ) {
-            _name = name;
         }
 
-        public CheckBoxInput(
-            string name,
-            string namePrefix
-        )
-        {
-            _name = name;
-            _prefixName = namePrefix;
-        }
+        public CheckBoxInput(string name, string namePrefix) : base(name, namePrefix) 
+        { 
 
-        public void SetValue(dynamic value)
-        {
-            _value = value;
-        }
-
-        private string GetLabel()
-        {
-            if (_prefixName != null)
-            {
-                return "<label for=" + _name.Replace(" ", "") + ">" + _prefixName + "</label>";
-            }
-
-            return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
         }
 
         public string Render()

@@ -27,7 +27,6 @@ namespace AlkoStoreServer.ViewHelpers
             { typeof(List<ProductAttributeProduct>), typeof(AttributesInput) },
             { typeof(List<CategoryAttributeCategory>), typeof(AttributesInput) },
             { typeof(List<ProductStore>), typeof(ProductStoresInput) },
-            //{ typeof(List<Category>), typeof(MultiSelectInput) },
             { typeof(List<ProductCategory>), typeof(MultiSelectInput) },
             { typeof(AttributeType), typeof(SelectInput) },
             { typeof(Category), typeof(SelectInput) },
@@ -39,27 +38,12 @@ namespace AlkoStoreServer.ViewHelpers
             _attributeService = attributeService;
         }
 
-        public IHtmlContent RenderEditForm(Model model)
+        public IHtmlContent RenderForm(Model model)
         {
             StringBuilder html = new StringBuilder();
             HtmlDocument doc = new HtmlDocument();
 
-            HtmlNode form = doc.CreateElement("form");
-            string actionUrl = "/" + model.GetType().Name + 
-                                "/edit/save/" + 
-                                model.GetType().GetProperty("ID").GetValue(model).ToString();
-
-            form.SetAttributeValue("action", actionUrl);
-            form.SetAttributeValue("method", "POST");
-            form.AddClass("entity-edit-form");
-
-            HtmlNode button = doc.CreateElement("button");
-            HtmlTextNode buttonText = doc.CreateTextNode("Save");
-            button.SetAttributeValue("type", "submit");
-            button.AddClass("bg-green");
-            button.AppendChild(buttonText);
-
-            form.InnerHtml += button.OuterHtml;
+            HtmlNode wrapper = doc.CreateElement("form-inner-wrapper");
 
             PropertyInfo[] properties = model.GetType().GetProperties();
 
@@ -67,57 +51,7 @@ namespace AlkoStoreServer.ViewHelpers
             {
                 if (!Attribute.IsDefined(data, typeof(NoRenderAttribute)))
                 {
-                    var value = data.GetValue(model);
-
-                    if (value != null)
-                    {
-                        IInput input = DefineInput(data);
-
-                        if (input is ISelectInput selectInput)
-                        {
-                            var key = data.Name;
-                            var relatedData = _attributeService.GetFormRelatedData(model);
-
-                            if (relatedData.TryGetValue(key, out List<Model> values))
-                            {
-                                selectInput.SetSelectData(values);
-                            }
-                        }
-
-                        if (input != null) input.SetValue(value);
-
-                        InputRenderer renderer = new InputRenderer(input);
-
-                        html.Append(renderer.Render());
-                    }
-                }
-            }
-
-            form.InnerHtml += html.ToString();
-
-            return new HtmlString(form.OuterHtml);
-        }
-
-        public IHtmlContent RenderCreateForm(Model model)
-        {
-            StringBuilder html = new StringBuilder();
-            HtmlDocument doc = new HtmlDocument();
-
-            HtmlNode form = doc.CreateElement("form");
-            string actionUrl = "/" + model.GetType().Name +
-                                "/create/save/";
-
-            form.SetAttributeValue("action", actionUrl);
-            form.SetAttributeValue("method", "POST");
-            form.AddClass("entity-create-form");
-
-            PropertyInfo[] properties = model.GetType().GetProperties();
-
-            foreach (var data in properties)
-            {
-                if (!Attribute.IsDefined(data, typeof(NoRenderAttribute)))
-                {
-                    var value = data.GetValue(model);
+                    var value = data.GetValue(model) ?? null;
 
                     IInput input = DefineInput(data);
 
@@ -140,16 +74,10 @@ namespace AlkoStoreServer.ViewHelpers
                 }
             }
 
-            HtmlNode button = doc.CreateElement("button");
-            button.SetAttributeValue("type", "submit");
-            button.InnerHtml = "Create";
+            wrapper.InnerHtml += html.ToString();
 
-            form.InnerHtml = html.ToString();
-            form.InnerHtml += button.OuterHtml;
-
-            return new HtmlString(form.OuterHtml);
+            return new HtmlString(wrapper.OuterHtml);
         }
-
 
         public IInput DefineInput(PropertyInfo data)
         {

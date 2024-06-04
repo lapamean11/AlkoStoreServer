@@ -3,50 +3,25 @@ using HtmlAgilityPack;
 
 namespace AlkoStoreServer.ViewHelpers.Inputs
 {
-    public class TextInput : IInput
+    public class TextInput : Input, IInput
     {
-        private dynamic _value;
-
-        private string _result = string.Empty;
-
-        private string _name;
-
-        private string _prefixName = null;
-
         public TextInput(
             string name
-        ) {
-            _name = name;
+        ) : base (name)
+        {
+
         }
 
         public TextInput(
             string name,
             string namePrefix
-        )
+        ) : base (name, namePrefix)
         {
-            _name = name;
-            _prefixName = namePrefix;
-        }
 
-        public void SetValue(dynamic value)
-        { 
-            _value = value;
-        }
-
-        private string GetLabel()
-        {
-            if (_prefixName != null) 
-            { 
-                return "<label for=" + _name.Replace(" ", "") + ">" + _prefixName + "</label>";
-            }
-
-            return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
         }
 
         public string Render()
         {
-            //_result += GetLabel();
-
             HtmlDocument doc = new HtmlDocument();
 
             HtmlNode input = doc.CreateElement("input");
@@ -64,7 +39,6 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             wrapper.InnerHtml += input.OuterHtml;
 
             _result += wrapper.OuterHtml;
-            //_result += "<br/>";
 
             return _result;
         }

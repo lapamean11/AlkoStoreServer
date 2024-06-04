@@ -127,7 +127,8 @@ namespace AlkoStoreServer.Controllers
                 u => u.Include(u => u.Role)
             );
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(user);
+            // IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(user);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(user);
             ViewBag.Model = user;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
@@ -155,7 +156,9 @@ namespace AlkoStoreServer.Controllers
         {
             AdminUser user = new AdminUser();
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(user);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(user);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(user);
+            ViewBag.Model = user;
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }

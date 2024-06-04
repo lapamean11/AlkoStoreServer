@@ -55,7 +55,8 @@ namespace AlkoStoreServer.Controllers
                       .Include(e => e.ParentCategory)
            );
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(category);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(category);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(category);
             ViewBag.Model = category;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
@@ -99,7 +100,9 @@ namespace AlkoStoreServer.Controllers
                     );
             }
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(category);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(category);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(category);
+            ViewBag.Model = category;
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }

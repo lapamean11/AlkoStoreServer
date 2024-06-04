@@ -52,7 +52,8 @@ namespace AlkoStoreServer.Controllers
                     a => a.Include(e => e.AttributeType)
                 );
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(attribute);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(attribute);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(attribute);
             ViewBag.Model = attribute;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
@@ -78,7 +79,11 @@ namespace AlkoStoreServer.Controllers
         [Authorize]
         public async Task<IActionResult> CreateNewAttribute()
         {
-            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(new ProductAttribute());
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(new ProductAttribute());
+            ProductAttribute attribute = new ProductAttribute();
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(attribute);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(attribute);
+            ViewBag.Model = attribute;
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }

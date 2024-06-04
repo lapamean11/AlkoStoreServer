@@ -3,8 +3,18 @@
 *@
 @{
     Layout = "_AdminPanelLayout";
+    var actionUrl = "/" + ViewBag.Model.GetType().Name + "/create/save";
+
 }
 
-<h2>Create</h2>
+<h2>Create new @ViewBag.Model.GetType().Name</h2>
 
-@Model
+@* @Model *@
+
+<div class="form-wrapper" style="position: relative;">
+    <form action="@actionUrl" method="POST">
+        @Html.AntiForgeryToken()
+        @Model
+        <button class="bg-green create-button">CREATE</button>
+    </form>
+</div>

@@ -4,24 +4,18 @@ using HtmlAgilityPack;
 
 namespace AlkoStoreServer.ViewHelpers.Inputs
 {
-    public class SelectInput : ISelectInput
+    public class SelectInput : Input, ISelectInput
     {
-        private dynamic _value;
-
-        private string _result = string.Empty;
-
-        private string _name;
-
         private List<Model> _selectData;
 
-        public SelectInput(string name)
+        public SelectInput(string name) : base (name)
         {
-            _name = name;
+
         }
 
-        private string GetLabel()
+        public SelectInput(string name, string namePrefix) : base(name, namePrefix)
         {
-            return "<label for=" + _name.Replace(" ", "") + ">" + _name + "</label>";
+
         }
 
         public string Render()
@@ -67,11 +61,6 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
         public void SetSelectData(List<Model> selectData)
         {
             _selectData = selectData;
-        }
-
-        public void SetValue(dynamic value)
-        {
-            _value = value;
         }
     }
 }

@@ -172,7 +172,7 @@ body {
     }
 
 .admin-wrapper .sidebar {
-    width: 70px;
+    width: 100px;
     height: 100vh;
     background-color: cadetblue;
     gap: 1rem;
@@ -203,4 +203,46 @@ body {
 
 .entity-edit-form {
     width: 50%;
+}
+
+.form-wrapper form {
+    width: 50%;
+}
+
+.form-wrapper form .create-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.form-wrapper .action-buttons {
+    position: absolute;
+    width: fit-content;
+    right: 0;
+}
+
+.form-wrapper form .save-button {
+    position: absolute;
+    right: 70px;
+    top: 0;
+}
+
+.save-button, .create-button, .action-button {
+    width: 70px;
+}
+
+.sidebar-item {
+    text-align: center;
+}
+
+.sidebar-item a {
+    color: white;
+    font-weight: 700;
+}
+
+.sidebar {
+    padding-top: 30px;
+    width: 100px;
+    padding-right: 5px;
+    padding-left: 5px;
 }

@@ -14,205 +14,248 @@
     </header> *@
     <style>
         html {
-          font-size: 14px;
+  font-size: 14px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-reverse {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-space-between {
+    justify-content: space-between;
+}
+
+.items-center {
+    align-items: center;
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+.gap1 {
+    gap: 1rem;
+}
+
+.checkbox {
+    width: fit-content;
+}
+
+/*.sidebar-item {
+    margin-top: 1rem;
+}*/
+
+.bg-red {
+    background-color: brown;
+    color: white;
+    padding: 5px;
+}
+
+.bg-green {
+    background-color: mediumseagreen;
+    color: white;
+    padding: 5px;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+    body .root {
+        padding: 20px 200px 20px 200px;
+    }
+
+    body .header {
+        background: #a1ced4;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 150px 10px 150px;
+    }
+
+        body .header .logo {
+            height: 75px;
         }
 
-        .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-          box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-        }
-
-        html {
-          position: relative;
-          min-height: 100%;
-        }
-
-        body {
-          margin-bottom: 60px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        .flex {
+        body .header .search {
+            width: 100%;
+            position: relative;
             display: flex;
         }
 
-        .flex-reverse {
-            display: flex;
-            flex-direction: row-reverse;
-        }
-
-        .flex-wrap {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .flex-col {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-space-between {
-            justify-content: space-between;
-        }
-
-        .items-center {
-            align-items: center;
-        }
-
-        p {
-            padding: 0;
-            margin: 0;
-        }
-
-        .gap1 {
-            gap: 1rem;
-        }
-
-        .checkbox {
-            width: fit-content;
-        }
-
-        /*.sidebar-item {
-            margin-top: 1rem;
-        }*/
-
-        .bg-red {
-            background-color: brown;
-            color: white;
+        body .header .searchTerm {
+            width: 100%;
+            border: 3px solid #00B4CC;
+            border-right: none;
             padding: 5px;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            color: #9DBFAF;
         }
 
-        .bg-green {
-            background-color: mediumseagreen;
-            color: white;
-            padding: 5px;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-            body .root {
-                padding: 20px 200px 20px 200px;
+            body .header .searchTerm:focus {
+                color: #00B4CC;
             }
 
-            body .header {
-                background: #a1ced4;
-                display: flex;
-                justify-content: space-between;
-                padding: 10px 150px 10px 150px;
-            }
-
-                body .header .logo {
-                    height: 75px;
-                }
-
-                body .header .search {
-                    width: 100%;
-                    position: relative;
-                    display: flex;
-                }
-
-                body .header .searchTerm {
-                    width: 100%;
-                    border: 3px solid #00B4CC;
-                    border-right: none;
-                    padding: 5px;
-                    border-radius: 5px 0 0 5px;
-                    outline: none;
-                    color: #9DBFAF;
-                }
-
-                    body .header .searchTerm:focus {
-                        color: #00B4CC;
-                    }
-
-                body .header .searchButton {
-                    width: 40px;
-                    height: 36px;
-                    border: 1px solid #00B4CC;
-                    background: #00B4CC;
-                    text-align: center;
-                    color: #fff;
-                    border-radius: 0 5px 5px 0;
-                    cursor: pointer;
-                    font-size: 20px;
-                }
-
-                body .header .wrap {
-                    width: 50%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-around;
-                }
-
-            body .categories {
-                display: flex;
-                gap: 30px;
-            }
-
-                body .categories .category a {
-                    text-decoration: none;
-                }
-
-            body .footer {
-                background: #a1ced4;
-                height: 200px;
-                margin-top: auto;
-            }
-
-        .admin-wrapper .root {
-            padding: 10px 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        body .header .searchButton {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #00B4CC;
+            background: #00B4CC;
+            text-align: center;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 20px;
         }
 
-            .admin-wrapper .root .admin-header {
-                background-color: antiquewhite;
-                padding: 15px 20px;
-            }
-
-        .admin-wrapper .sidebar {
-            width: 70px;
-            height: 100vh;
-            background-color: cadetblue;
-            gap: 1rem;
-        }
-
-        .admin-wrapper .sidebar-image svg {
-            height: 50px;
-            width: 50px;
-        }
-
-        .admin-header {
-            background-color: red;
-        }
-
-        .input-wrapper {
-            display: flex;
-            flex-direction: column;
-            margin-top: 20px;
-        }
-
-        .admin-layout-wrapper form {
-            /*width: 50%;*/
-        }
-
-        .entity-create-form {
+        body .header .wrap {
             width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
         }
 
-        .entity-edit-form {
-            width: 50%;
+    body .categories {
+        display: flex;
+        gap: 30px;
+    }
+
+        body .categories .category a {
+            text-decoration: none;
         }
+
+    body .footer {
+        background: #a1ced4;
+        height: 200px;
+        margin-top: auto;
+    }
+
+.admin-wrapper .root {
+    padding: 10px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+    .admin-wrapper .root .admin-header {
+        background-color: antiquewhite;
+        padding: 15px 20px;
+    }
+
+.admin-wrapper .sidebar {
+    width: 100px;
+    height: 100vh;
+    background-color: cadetblue;
+    gap: 1rem;
+}
+
+.admin-wrapper .sidebar-image svg {
+    height: 50px;
+    width: 50px;
+}
+
+.admin-header {
+    background-color: red;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.admin-layout-wrapper form {
+    /*width: 50%;*/
+}
+
+.entity-create-form {
+    width: 50%;
+}
+
+.entity-edit-form {
+    width: 50%;
+}
+
+.form-wrapper form {
+    width: 50%;
+}
+
+.form-wrapper form .create-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.form-wrapper .action-buttons {
+    position: absolute;
+    width: fit-content;
+    right: 0;
+}
+
+.form-wrapper form .save-button {
+    position: absolute;
+    right: 70px;
+    top: 0;
+}
+
+.save-button, .create-button, .action-button {
+    width: 70px;
+}
+
+.sidebar-item {
+    text-align: center;
+}
+
+.sidebar-item a {
+    color: white;
+    font-weight: 700;
+}
+
+.sidebar {
+    padding-top: 30px;
+    width: 100px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
     </style>
     <div class="">
         <main role="main" class="pb-3">

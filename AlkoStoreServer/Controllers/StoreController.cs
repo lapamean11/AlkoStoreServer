@@ -46,7 +46,8 @@ namespace AlkoStoreServer.Controllers
                         .ThenInclude(e => e.Product)
             );
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(store);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderEditForm(store);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(store);
             ViewBag.Model = store;
 
             return View("Views/Layouts/EditLayout.cshtml", htmlResult);
@@ -79,9 +80,11 @@ namespace AlkoStoreServer.Controllers
                         a => a.Include(a => a.AttributeType)
                     );
 
-            List<ProductStore> products*/ 
+            List<ProductStore> products*/
 
-            IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(store);
+            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(store);
+            IHtmlContent htmlResult = _htmlRenderer.RenderForm(store);
+            ViewBag.Model = store;
 
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }
