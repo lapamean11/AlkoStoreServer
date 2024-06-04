@@ -27,7 +27,6 @@ using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => 
     {
@@ -36,7 +35,6 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddHttpContextAccessor();
 
-// Use IConfiguration to access app settings
 var configuration = builder.Configuration;
 
 var firebaseConfig = new ConfigurationBuilder()
@@ -55,7 +53,6 @@ var firestoreConfig = new ConfigurationBuilder()
     .Build();
 
 
-// Load Firebase Admin SDK credentials from a secure location
 var firebaseCredentialPath = Path.Combine(builder.Environment.ContentRootPath, "Config", "Firebase", "firebase.json");
 var firebaseCredential = GoogleCredential.FromFile(firebaseCredentialPath);
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", firebaseCredentialPath);
@@ -100,10 +97,6 @@ builder.Services.AddAuthorization(options =>
          policy.Requirements.Add(new AdminRequirement()));
 });
 
-/*builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(dbConfig["DbConnectionString"])
-);*/
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source="+dbPath));
 
@@ -111,22 +104,7 @@ builder.Services.AddScoped(typeof(IDbRepository<>), typeof(DbRepository<>));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-/*builder.Services.AddSingleton(FirebaseApp.Create(new AppOptions()
-{
-    Credential = GoogleCredential.FromFile("path/to/your/serviceAccountKey.json"),
-}));*/
-
 builder.Services.AddSingleton(FirebaseAuth.DefaultInstance);
-/*builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
-{
-    ApiKey = "AIzaSyCbTg4ZTgKQ20oZXGu5nhPJDfQYv71JwSg",
-    AuthDomain = "testproj-6693e.firebaseapp.com",
-    Providers = new FirebaseAuthProvider[]
-    {
-        new EmailProvider(),
-        new GoogleProvider()
-    }
-}));*/
 
 builder.Services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
 builder.Services.AddSingleton<IInstanceResolver, InstanceResolver>();
@@ -137,7 +115,7 @@ builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 builder.Services.AddScoped<IHtmlRenderer, HtmlRenderer>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.WebHost.UseUrls("http://0.0.0.0:5000");
+//builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
 var app = builder.Build();
 
@@ -165,10 +143,5 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), builder 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "Test",
-    pattern: "/test",
-    defaults: new { controller = "Home", action = "Test" });
 
 app.Run();
