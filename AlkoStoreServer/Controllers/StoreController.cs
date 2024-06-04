@@ -55,6 +55,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("delete/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> DeleteStore(string id)
         {
             try
@@ -75,14 +76,6 @@ namespace AlkoStoreServer.Controllers
         {
             Store store = new Store();
 
-            /*List<ProductAttribute> attributes =
-                (List<ProductAttribute>)await _productAttributeRepository.GetWithInclude(
-                        a => a.Include(a => a.AttributeType)
-                    );
-
-            List<ProductStore> products*/
-
-            //IHtmlContent htmlResult = _htmlRenderer.RenderCreateForm(store);
             IHtmlContent htmlResult = _htmlRenderer.RenderForm(store);
             ViewBag.Model = store;
 
@@ -91,6 +84,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("edit/save/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> EditStoreSave(int id, Store store)
         {
             AppDbContext context = await _storeRepository.GetContext();

@@ -64,6 +64,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("delete/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> DeleteProduct(string id)
         {
             try
@@ -109,6 +110,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("edit/save/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> EditCategorySave(int id, Category category)
         {
             AppDbContext context = await _categoryRepository.GetContext();

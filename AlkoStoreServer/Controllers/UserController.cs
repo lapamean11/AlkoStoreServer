@@ -43,7 +43,7 @@ namespace AlkoStoreServer.Controllers
         {
             if (ModelState.IsValid)
             {
-                IEnumerable<AdminUser> users = await _adminUserRepository.GetWithInclude();
+                IEnumerable<AdminUser> users = await _adminUserRepository.GetWithInclude(au => au.Include(e => e.Role));
                 AdminUser user = users.Where(user => user.Username == model.Username).FirstOrDefault();
 
                 if (user == null || !user.VerifyPassword(model.Password))
@@ -52,7 +52,8 @@ namespace AlkoStoreServer.Controllers
                 List<Claim> claims = new List<Claim>
                 {
                     new Claim("Username", user.Username),
-                    new Claim("Id", user.ID.ToString())
+                    new Claim("Id", user.ID.ToString()),
+                    new Claim("IsAdmin", (user.Role.Identifier == "admin" ? 1 : 0).ToString())
                 };
 
                 var claimsIdentity = new ClaimsIdentity(
@@ -82,33 +83,9 @@ namespace AlkoStoreServer.Controllers
         public async Task<IActionResult> Logout()
         {
             await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
             return RedirectToAction("Index", "Home");
         }
-
-        /*[HttpPost("register")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(AdminRegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // var user = new AdminUser { Username = model.Email, Email = model.Email };
-                var roles = await _roleRepository.GetWithInclude();
-
-                AdminUser user = new AdminUser
-                {
-                    Username = "admin",
-                    //RoleId = roles.Where(item => item.Identifier == "admin").ToList().FirstOrDefault().ID,
-                    RoleId = 1,
-                    CreatedAt = DateTime.Now
-                };
-
-                user.SetPassword("admin123");
-
-                int newUserId = await _adminUserRepository.CreateEntity(user);
-            }
-
-            return RedirectToAction("Index", "Home");
-        }*/
 
         [HttpGet("list")]
         [Authorize]
@@ -136,6 +113,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("delete/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> DeleteAdminUser(int id)
         {
             try
@@ -152,6 +130,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpGet("create")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> CreateNewAdminUser()
         {
             AdminUser user = new AdminUser();
@@ -165,6 +144,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("create/save")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> SaveNewAdminUser(AdminUser user)
         {
             using (var transaction = await (
@@ -194,6 +174,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpPost("edit/save/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> EditAdminUserSave(int id, AdminUser user)
         {
             using (var transaction = await (

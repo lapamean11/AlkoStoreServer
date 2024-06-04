@@ -6,32 +6,35 @@
     string modelName = ViewBag.Model.GetType().Name;
     int id = ViewBag.Model.ID;
     string actionUrl = "/" + modelName + "/edit/save/" + id;
+    bool isAdmin = Int32.Parse(Context.User.Claims.First(c => c.Type == "IsAdmin").Value) == 1 ? true : false;
 }
 
 <h2>Edit @modelName</h2>
 
-@* <div class="action-buttons flex-reverse">
-    <form action="/@modelName/delete/@id" method="POST">
-        <button type="submit" class="bg-red">
-            DELETE
-        </button>
-    </form>
-</div> *@
-
-@* @Model *@
-
 <div class="form-wrapper" style="position: relative;">
-    <div class="action-buttons">
-        <form action="/@modelName/delete/@id" method="POST">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="bg-red delete-button">
-                DELETE
-            </button>
-        </form>
-    </div>
+        <div class="action-buttons">
+            @if (isAdmin)
+            {
+                <form action="/@modelName/delete/@id" method="POST">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="bg-red delete-button">
+                        DELETE
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a href="/@modelName/list">
+                    <button>Back To List</button>
+                </a>
+            }
+        </div>
     <form action="@actionUrl" method="POST">
         @Html.AntiForgeryToken()
         @Model
-        <button class="bg-green save-button">SAVE</button>
+        @if (isAdmin)
+        {
+            <button class="bg-green save-button">SAVE</button>
+        }
     </form>
 </div>

@@ -39,25 +39,10 @@ namespace AlkoStoreServer.Controllers
         //private readonly FirebaseAuthClient _firebaseAuth;
 
         public HomeController(
-            ILogger<HomeController> logger, 
-            AppDbContext dbContext,
-            IDbRepository<Category> categoryRepository,
-            IDbRepository<Product> productRepository,
-            ICategoryRepository categoryRepository2,
-            IProductRepository productRepository2,
             IDbRepository<Models.User> userRepository
-            //FirebaseAuthClient firebaseAuth
         )
         {
-            /*_logger = logger;
-            _dbContext = dbContext;
-            _categoryRepository = categoryRepository;
-            _productRepository = productRepository;
-            _categoryRepository2 = categoryRepository2;
-            _productRepository2 = productRepository2;*/
             _userRepository = userRepository;
-            //_firebaseAuth = firebaseAuth;
-
         }
 
         public async Task<IActionResult> Index()
@@ -65,38 +50,17 @@ namespace AlkoStoreServer.Controllers
             return View();
         }
 
-        /*[HttpGet("test")]
-        [Authorize(Policy = "AdminAccess")]
-        public async Task<IActionResult> Test()
-        {
-            string email = "test@test.com";
-            string password = "123456";
-
-            UserRecordArgs args = new UserRecordArgs
-            { 
-                Email = "test@test.com",
-                Password = "123456"
-            };
-            args.Email = email;
-            args.Password = password;
-
-            var userCreds = await _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);
-
-            var kek = userCreds is null ? null : await userCreds.User.GetIdTokenAsync();
-            var kek2 = kek;
-            return View();
-        }*/
-
         [HttpGet("dashboard")]
-        [Authorize] // (Policy = "AdminAccess")
+        [Authorize]
         public async Task<IActionResult> Dashboard()
         {
+            int userCount = ((List<Models.User>)await _userRepository.GetWithInclude()).Count();
             var dashboardData = new
             {
-
+                userCount = userCount
             };
 
-            return View();
+            return View(dashboardData);
         }
     }
 }
