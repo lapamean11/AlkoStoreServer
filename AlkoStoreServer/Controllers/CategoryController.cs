@@ -151,8 +151,6 @@ namespace AlkoStoreServer.Controllers
                         }
                     }
 
-                    var lola = categoryToUppdate;
-
                     await _categoryRepository.Update(categoryToUppdate);
 
                     await transaction.CommitAsync();

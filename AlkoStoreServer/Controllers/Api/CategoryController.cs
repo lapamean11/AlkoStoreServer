@@ -48,6 +48,7 @@ namespace AlkoStoreServer.Controllers.Api
                         ID = p.Product.ID,
                         Name = p.Product.Name,
                         ImgUrl = p.Product.ImgUrl,
+                        IsPopular = p.Product.IsPopular,
                         Stores = p.Product.ProductStore.Select(sp => new StoreProjection 
                         {
                             Price = sp.Price

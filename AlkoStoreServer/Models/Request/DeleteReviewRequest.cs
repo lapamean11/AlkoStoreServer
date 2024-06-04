@@ -3,7 +3,5 @@
     public class DeleteReviewRequest
     {
         public int ReviewId { get; set; }
-
-        public string Email { get; set;}
     }
 }

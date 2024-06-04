@@ -4,8 +4,6 @@
     {
         public int ProductId { get; set; }
 
-        public string? Email { get; set; }
-
         public int? Rating { get; set; }
 
         public string? Value { get; set; }

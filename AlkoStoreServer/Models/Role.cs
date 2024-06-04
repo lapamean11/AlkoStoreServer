@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using AlkoStoreServer.Base;
+using AlkoStoreServer.CustomAttributes;
 
 namespace AlkoStoreServer.Models
 {
     public class Role : Model
     {
+        [NoRender]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }

@@ -39,11 +39,13 @@ namespace AlkoStoreServer.Controllers.Api
                     ID = u.ID,
                     Name = u.Name,
                     StoreLink = u.StoreLink,
+                    ImgUrl = u.ImgUrl,
                     Products = u.ProductStore.Select(p => new ProductProjection
                     {
                         ID = p.Product.ID,
                         Name = p.Product.Name,
                         ImgUrl = p.Product.ImgUrl,
+                        IsPopular = p.Product.IsPopular,
                         Stores = p.Product.ProductStore.Select(sp => new StoreProjection
                         {
                             Price = sp.Price

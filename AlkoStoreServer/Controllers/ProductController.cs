@@ -140,8 +140,8 @@ namespace AlkoStoreServer.Controllers
                     if (productToUpdate == null)
                         throw new Exception();
 
-                    var lol = product;
                     productToUpdate.Name = product.Name;
+                    productToUpdate.ImgUrl = product.ImgUrl;
 
                     List<int> newCategoryIds = Request.Form["Categories"].Select(int.Parse).ToList();
                     HashSet<int> allCategoryIds = new HashSet<int>();
@@ -237,8 +237,6 @@ namespace AlkoStoreServer.Controllers
                         }
                     }
 
-                    var lols = productToUpdate;
-
                     await _productRepository.Update(productToUpdate);
                     await transaction.CommitAsync();
 
@@ -286,9 +284,6 @@ namespace AlkoStoreServer.Controllers
                             ProductId = newProductId 
                         }
                     ).ToList();
-
-                    var lol = categories;
-
 
                     await _productCategoryRepository.AddRange(categories);
 

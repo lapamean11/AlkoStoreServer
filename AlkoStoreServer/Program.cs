@@ -20,6 +20,10 @@ using System.Text;
 using System.Text.Json.Serialization;
 using AlkoStoreServer.ViewHelpers;
 using AlkoStoreServer.ViewHelpers.Interfaces;
+using FirebaseAdmin.Auth;
+using Google.Api;
+using Google.Cloud.Firestore;
+using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,12 +49,20 @@ var dbConfig = new ConfigurationBuilder()
     .AddJsonFile("Config/Database/db.json", optional: true, reloadOnChange: true)
     .Build();
 
+var firestoreConfig = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("Config/GoogleCloud/google.json", optional: true, reloadOnChange: true)
+    .Build();
+
+
 // Load Firebase Admin SDK credentials from a secure location
 var firebaseCredentialPath = Path.Combine(builder.Environment.ContentRootPath, "Config", "Firebase", "firebase.json");
 var firebaseCredential = GoogleCredential.FromFile(firebaseCredentialPath);
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", firebaseCredentialPath);
+
+builder.Services.AddSingleton(FirestoreDb.Create(firestoreConfig["GoogleCloud:ProjectId"]));
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath, dbConfig["DbName"]);
-// var lola = firebaseCredential.;
 
 FirebaseApp.Create(new AppOptions()
 {
@@ -88,8 +100,6 @@ builder.Services.AddAuthorization(options =>
          policy.Requirements.Add(new AdminRequirement()));
 });
 
-//var lola = dbConfig["DbConnectionString"];
-
 /*builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(dbConfig["DbConnectionString"])
 );*/
@@ -101,6 +111,12 @@ builder.Services.AddScoped(typeof(IDbRepository<>), typeof(DbRepository<>));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+/*builder.Services.AddSingleton(FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("path/to/your/serviceAccountKey.json"),
+}));*/
+
+builder.Services.AddSingleton(FirebaseAuth.DefaultInstance);
 /*builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
 {
     ApiKey = "AIzaSyCbTg4ZTgKQ20oZXGu5nhPJDfQYv71JwSg",
@@ -119,6 +135,7 @@ builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IAttributeRepository, AttributeRepository>();
 
 builder.Services.AddScoped<IHtmlRenderer, HtmlRenderer>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.WebHost.UseUrls("http://0.0.0.0:5000");
 

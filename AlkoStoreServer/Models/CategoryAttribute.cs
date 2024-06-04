@@ -7,6 +7,7 @@ namespace AlkoStoreServer.Models
 {
     public class CategoryAttribute : Model
     {
+        [NoRender]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }

@@ -50,8 +50,6 @@ namespace AlkoStoreServer.ViewHelpers.Inputs
             }
 
             int counter = 0;
-            var lol = _selectData;
-            var lol2 = selected.ToList();
             foreach (var item in _selectData)
             {
                 var id = item.GetType().GetProperty("ID").GetValue(item, null).ToString();

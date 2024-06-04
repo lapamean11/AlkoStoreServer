@@ -9,6 +9,7 @@ namespace AlkoStoreServer.Models
 {
     public class AdminUser : Model
     {
+        [NoRender]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }

@@ -3,9 +3,12 @@ using AlkoStoreServer.Data;
 using AlkoStoreServer.Models;
 using AlkoStoreServer.Models.Request;
 using AlkoStoreServer.Models.ViewModels;
+using AlkoStoreServer.Repositories;
 using AlkoStoreServer.Repositories.Interfaces;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 
 namespace AlkoStoreServer.Controllers.Api
 {
@@ -21,26 +24,31 @@ namespace AlkoStoreServer.Controllers.Api
         }
 
         [HttpPost("user/register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
+        public async Task<IActionResult> Register()
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Email))
+                if (HttpContext.Items.TryGetValue("DecodedUserData", out var decodedData))
                 {
-                    return BadRequest("Email is required.");
+                    var tokenData = (ImmutableDictionary<string, object>)decodedData;
+                    var userEmail = tokenData["email"];
+
+                    bool emailExists = await (
+                        await _userRepository.GetContext()).User.AnyAsync(u => u.Email == userEmail
+                    );
+
+                    if (emailExists)
+                    {
+                        return Conflict("Email already exists.");
+                    }
+
+                    User user = new User { Email = (string)userEmail };
+                    await _userRepository.CreateEntity(user);
+
+                    return Ok("User registered successfully.");
                 }
 
-                bool emailExists = await (await _userRepository.GetContext()).User.AnyAsync(u => u.Email == request.Email);
-
-                if (emailExists)
-                {
-                    return Conflict("Email already exists.");
-                }
-
-                User user = new User { Email = request.Email };
-                await _userRepository.CreateEntity(user);
-
-                return Ok("User registered successfully.");
+                return BadRequest("User is not registered successfully.");
             }
             catch (Exception ex) 
             {

@@ -7,6 +7,7 @@ namespace AlkoStoreServer.Models
 {
     public class Product : Model
     {
+        [NoRender]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
@@ -14,6 +15,12 @@ namespace AlkoStoreServer.Models
         public string Name { get; set; }
 
         public string ImgUrl { get; set; }
+
+        [NoRender]
+        public int IsPopular { get; set; }
+
+        [NotMapped]
+        public static readonly int IS_POPULAR = 1;
 
         /*[Reference(typeof(Category))]
         public List<Category> Categories { get; set; } = new List<Category>();*/

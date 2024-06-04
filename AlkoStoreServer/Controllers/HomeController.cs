@@ -34,6 +34,8 @@ namespace AlkoStoreServer.Controllers
 
         private readonly IProductRepository _productRepository2;
 
+        private readonly IDbRepository<Models.User> _userRepository;
+
         //private readonly FirebaseAuthClient _firebaseAuth;
 
         public HomeController(
@@ -42,16 +44,18 @@ namespace AlkoStoreServer.Controllers
             IDbRepository<Category> categoryRepository,
             IDbRepository<Product> productRepository,
             ICategoryRepository categoryRepository2,
-            IProductRepository productRepository2
+            IProductRepository productRepository2,
+            IDbRepository<Models.User> userRepository
             //FirebaseAuthClient firebaseAuth
         )
         {
-            _logger = logger;
+            /*_logger = logger;
             _dbContext = dbContext;
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
             _categoryRepository2 = categoryRepository2;
-            _productRepository2 = productRepository2;
+            _productRepository2 = productRepository2;*/
+            _userRepository = userRepository;
             //_firebaseAuth = firebaseAuth;
 
         }
@@ -87,6 +91,11 @@ namespace AlkoStoreServer.Controllers
         [Authorize] // (Policy = "AdminAccess")
         public async Task<IActionResult> Dashboard()
         {
+            var dashboardData = new
+            {
+
+            };
+
             return View();
         }
     }

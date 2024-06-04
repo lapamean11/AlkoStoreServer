@@ -128,7 +128,6 @@ namespace AlkoStoreServer.ViewHelpers
 
                         if (relatedData.TryGetValue(key, out List<Model> values))
                         {
-                            var lol = values;
                             selectInput.SetSelectData(values);
                         }
                     }
@@ -158,8 +157,6 @@ namespace AlkoStoreServer.ViewHelpers
             {
                 if (item.Key == data.PropertyType)
                 {
-                    var lol = item;
-                    var lola = data;
                     return (IInput)Activator.CreateInstance(
                         item.Value,
                         data.Name

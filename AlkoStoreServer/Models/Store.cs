@@ -7,6 +7,7 @@ namespace AlkoStoreServer.Models
 {
     public class Store : Model
     {
+        [NoRender]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
@@ -16,6 +17,8 @@ namespace AlkoStoreServer.Models
         public string Country { get; set; }
 
         public string StoreLink { get; set; }
+
+        public string ImgUrl { get; set; }
 
         [NoRender]
         [Reference(typeof(Product))]

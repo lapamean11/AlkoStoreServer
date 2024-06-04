@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace AlkoStoreServer.Middleware
 {
@@ -30,12 +31,16 @@ namespace AlkoStoreServer.Middleware
                 }
 
                 var authHeader = context.Request.Headers["Authorization"].ToString();
+
                 if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {
                     var token = authHeader.Substring("Bearer ".Length).Trim();
                     FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
 
-                    var lol = decodedToken.ToString();
+                    var decodedData = decodedToken.Claims;
+                    //Dictionary<string, string> userData = JsonConvert.DeserializeObject<Dictionary<string, string>>(decodedData);
+
+                    context.Items["DecodedUserData"] = decodedData;
 
                     await _next(context); // Token is valid, proceed with the request
                 }

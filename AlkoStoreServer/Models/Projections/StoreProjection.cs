@@ -8,6 +8,8 @@
 
         public string? StoreLink { get; set; }
 
+        public string? ImgUrl { get; set; }
+
         public decimal? Price { get; set; }
 
         public string? Barcode { get; set; }

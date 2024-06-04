@@ -101,6 +101,7 @@ namespace AlkoStoreServer.Controllers
                     storeToUpdate.Name = store.Name;
                     storeToUpdate.StoreLink = store.StoreLink;
                     storeToUpdate.Country = store.Country;
+                    storeToUpdate.ImgUrl = store.ImgUrl;
 
                     await _storeRepository.Update(storeToUpdate);
                     await transaction.CommitAsync();
@@ -120,7 +121,6 @@ namespace AlkoStoreServer.Controllers
         [Authorize]
         public async Task<IActionResult> SaveNewStore(Store store)
         {
-            var lol = store;
             store.ProductStore = null;
 
             AppDbContext context = await _storeRepository.GetContext();

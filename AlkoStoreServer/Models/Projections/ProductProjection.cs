@@ -10,6 +10,8 @@
 
         public string ImgUrl { get; set; }
 
+        public int IsPopular { get; set; }
+
         public List<StoreProjection>? Stores { get; set; }
 
         public List<CategoryProjection>? Categories { get; set; }
