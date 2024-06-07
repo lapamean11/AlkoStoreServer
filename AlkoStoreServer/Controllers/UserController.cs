@@ -89,6 +89,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpGet("list")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> AdminUserList()
         {
             List<AdminUser> users = (List<AdminUser>)await _adminUserRepository.GetWithInclude();
@@ -98,6 +99,7 @@ namespace AlkoStoreServer.Controllers
 
         [HttpGet("edit/{id}")]
         [Authorize]
+        [Authorize(Policy = "AdminAccess")]
         public async Task<IActionResult> AdminUserEdit(int id)
         {
             AdminUser user = await _adminUserRepository.GetById(id,

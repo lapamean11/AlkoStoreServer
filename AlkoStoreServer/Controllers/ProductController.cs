@@ -122,6 +122,80 @@ namespace AlkoStoreServer.Controllers
             return View("Views/Layouts/CreateLayout.cshtml", htmlResult);
         }
 
+        private async Task UpdateProductCategories(Product productToUpdate, List<int> newCategoryIds)
+        {
+            var allCategoryIds = new HashSet<int>();
+
+            foreach (var categoryId in newCategoryIds)
+            {
+                await AddCategoryAndRelations(categoryId, allCategoryIds);
+            }
+
+            var existingCategoryIds = productToUpdate.Categories.Select(c => c.CategoryId).ToList();
+            var categoriesToRemove = productToUpdate.Categories.Where(c => !allCategoryIds.Contains(c.CategoryId)).ToList();
+            var categoriesToAdd = allCategoryIds.Where(id => !existingCategoryIds.Contains(id))
+                .Select(id => new ProductCategory { ProductId = id, CategoryId = id }).ToList();
+
+            productToUpdate.Categories.RemoveAll(categoriesToRemove.Contains);
+            productToUpdate.Categories.AddRange(categoriesToAdd);
+        }
+
+        private void UpdateProductStores(Product productToUpdate, List<ProductStore> newStores)
+        {
+            var existingStores = productToUpdate.ProductStore;
+
+            var storesToRemove = existingStores.Where(es => !newStores.Any(ns => ns.StoreId == es.StoreId)).ToList();
+            productToUpdate.ProductStore.RemoveAll(storesToRemove.Contains);
+
+            foreach (var newStore in newStores)
+            {
+                var existingStore = existingStores.FirstOrDefault(es => es.StoreId == newStore.StoreId);
+                if (existingStore == null)
+                {
+                    productToUpdate.ProductStore.Add(new ProductStore
+                    {
+                        StoreId = newStore.StoreId,
+                        ProductId = productToUpdate.ID,
+                        Price = newStore.Price,
+                        Barcode = newStore.Barcode,
+                        Qty = newStore.Qty
+                    });
+                }
+                else
+                {
+                    existingStore.Price = newStore.Price;
+                    existingStore.Barcode = newStore.Barcode;
+                    existingStore.Qty = newStore.Qty;
+                }
+            }
+        }
+
+        private void UpdateProductAttributes(Product productToUpdate, List<ProductAttributeProduct> newAttributes)
+        {
+            var existingAttributes = productToUpdate.ProductAttributes;
+
+            var attributesToRemove = existingAttributes.Where(ea => !newAttributes.Any(na => na.AttributeId == ea.AttributeId)).ToList();
+            productToUpdate.ProductAttributes.RemoveAll(attributesToRemove.Contains);
+
+            foreach (var newAttribute in newAttributes)
+            {
+                var existingAttribute = existingAttributes.FirstOrDefault(ea => ea.AttributeId == newAttribute.AttributeId);
+                if (existingAttribute == null)
+                {
+                    productToUpdate.ProductAttributes.Add(new ProductAttributeProduct
+                    {
+                        ProductId = productToUpdate.ID,
+                        AttributeId = newAttribute.AttributeId,
+                        Value = newAttribute.Value
+                    });
+                }
+                else
+                {
+                    existingAttribute.Value = newAttribute.Value ?? "0";
+                }
+            }
+        }
+
         [HttpPost("edit/save/{id}")]
         [Authorize]
         [Authorize(Policy = "AdminAccess")]
@@ -151,96 +225,14 @@ namespace AlkoStoreServer.Controllers
                     List<int> newCategoryIds = Request.Form["Categories"].Select(int.Parse).ToList();
                     HashSet<int> allCategoryIds = new HashSet<int>();
 
-                    foreach (int categoryId in newCategoryIds)
-                    {
-                        await AddCategoryAndRelations(categoryId, allCategoryIds);
-                    }
-
-                    List<int> existingCategoryIds = productToUpdate.Categories.Select(c => c.CategoryId).ToList();
-
-                    List<ProductCategory> categoriesToRemove = productToUpdate.Categories
-                        .Where(c => !allCategoryIds.Contains(c.CategoryId))
-                        .ToList();
-
-                    foreach (var category in categoriesToRemove)
-                    {
-                        productToUpdate.Categories.Remove(category);
-                    }
-
-                    var categoriesToAdd = allCategoryIds
-                        .Where(id => !existingCategoryIds.Contains(id))
-                        .Select(id => new ProductCategory { ProductId = id, CategoryId = id })
-                        .ToList();
-
-                    foreach (var category in categoriesToAdd)
-                    {
-                        productToUpdate.Categories.Add(category);
-                    }
+                    await UpdateProductCategories(productToUpdate, newCategoryIds);
 
 
                     List<ProductStore> newStores = product.ProductStore.Where(e => e.StoreId != 0).ToList();
-                    List<ProductStore> existingStores = productToUpdate.ProductStore;
-
-                    List<ProductStore> storesToRemove = existingStores
-                        .Where(es => !newStores.Any(ns => ns.StoreId == es.StoreId))
-                        .ToList();
-
-                    foreach (var store in storesToRemove)
-                    {
-                        productToUpdate.ProductStore.Remove(store);
-                    }
-
-                    foreach (var newStore in newStores)
-                    {
-                        var existingStore = existingStores.FirstOrDefault(es => es.StoreId == newStore.StoreId);
-                        if (existingStore == null)
-                        {
-                            productToUpdate.ProductStore.Add(new ProductStore
-                            {
-                                StoreId = newStore.StoreId,
-                                ProductId = id,
-                                Price = newStore.Price,
-                                Barcode = newStore.Barcode,
-                                Qty = newStore.Qty
-                            });
-                        }
-                        else
-                        {
-                            existingStore.Price = newStore.Price;
-                            existingStore.Barcode = newStore.Barcode;
-                            existingStore.Qty = newStore.Qty;
-                        }
-                    }
+                    UpdateProductStores(productToUpdate, newStores);
 
                     List<ProductAttributeProduct> newAttributes = product.ProductAttributes;
-                    List<ProductAttributeProduct> existingAttributes = productToUpdate.ProductAttributes;
-
-                    List<ProductAttributeProduct> attributesToRemove = existingAttributes
-                        .Where(ea => !newAttributes.Any(na => na.AttributeId == ea.AttributeId))
-                        .ToList();
-
-                    foreach (var attribute in attributesToRemove)
-                    {
-                        productToUpdate.ProductAttributes.Remove(attribute);
-                    }
-
-                    foreach (var newAttribute in newAttributes)
-                    {
-                        var existingAttribute = existingAttributes.FirstOrDefault(ea => ea.AttributeId == newAttribute.AttributeId);
-                        if (existingAttribute == null)
-                        {
-                            productToUpdate.ProductAttributes.Add(new ProductAttributeProduct
-                            {
-                                ProductId = id,
-                                AttributeId = newAttribute.AttributeId,
-                                Value = newAttribute.Value
-                            });
-                        }
-                        else
-                        {
-                            existingAttribute.Value = newAttribute.Value ?? "0";
-                        }
-                    }
+                    UpdateProductAttributes(productToUpdate, newAttributes);
 
                     await _productRepository.Update(productToUpdate);
                     await transaction.CommitAsync();
@@ -332,19 +324,11 @@ namespace AlkoStoreServer.Controllers
 
                 Category category = await _categoryRepository.GetById(categoryId,
                     c => c.Include(e => e.ChildCategories).Where(ca => ca.ID != 1 && ca.CategoryLevel > 0)
-               );
+                );
 
-                if (category != null)
+                if (category != null && category.ParentCategoryId.HasValue && category.ParentCategoryId != 1)
                 {
-                    if (category.ParentCategoryId.HasValue && category.ParentCategoryId != 1)
-                    {
-                        await AddCategoryAndRelations(category.ParentCategoryId.Value, allCategoryIds);
-                    }
-
-                    foreach (var subCategory in category.ChildCategories)
-                    {
-                        await AddCategoryAndRelations(subCategory.ID, allCategoryIds);
-                    }
+                    await AddCategoryAndRelations(category.ParentCategoryId.Value, allCategoryIds);
                 }
             }
         }

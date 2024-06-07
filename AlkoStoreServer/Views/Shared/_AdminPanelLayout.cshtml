@@ -3,6 +3,8 @@
 *@
 @{
     Layout = "_BaseLayout";
+    bool isAdmin = Int32.Parse(Context.User.Claims.First(c => c.Type == "IsAdmin").Value) == 1 ? true : false;
+
 }
 <div class="admin-layout-wrapper admin-wrapper flex">
     <div class="sidebar flex-col items-center">
@@ -14,13 +16,16 @@
                 <p>Products</p>
             </a>
         </div>
-        <div class="sidebar-item">
-            <a href="/adminuser/list">
-                <div class="sidebar-image">
-                </div>
-                <p>Admin Users</p>
-            </a>
-        </div>
+        @if (isAdmin)
+        {
+            <div class="sidebar-item">
+                <a href="/adminuser/list">
+                    <div class="sidebar-image">
+                    </div>
+                    <p>Admin Users</p>
+                </a>
+            </div>
+        }
         <div class="sidebar-item">
             <a href="/category/list">
                 <div class="sidebar-image">
